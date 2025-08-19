@@ -96,7 +96,7 @@ pub struct GuildRank {
     pub requirements: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum GuildPermission {
     InviteMembers,
     KickMembers,
@@ -515,19 +515,26 @@ impl GuildManager {
 
     /// Update guild experience and level
     pub fn add_guild_experience(&mut self, guild_id: GuildId, experience: u64) -> Result<()> {
-        let guild = self.guilds.get_mut(&guild_id)
-            .ok_or_else(|| anyhow::anyhow!("Guild not found"))?;
+        let level_up_info = {
+            let guild = self.guilds.get_mut(&guild_id)
+                .ok_or_else(|| anyhow::anyhow!("Guild not found"))?;
 
-        guild.experience += experience;
-        
-        // Check for level up
-        let required_exp = (guild.level as u64 + 1) * 1000;
-        if guild.experience >= required_exp {
-            guild.level += 1;
-            guild.experience -= required_exp;
+            guild.experience += experience;
             
-            // Grant level up rewards
-            self.grant_level_rewards(guild_id, guild.level)?;
+            // Check for level up
+            let required_exp = (guild.level as u64 + 1) * 1000;
+            if guild.experience >= required_exp {
+                guild.level += 1;
+                guild.experience -= required_exp;
+                Some(guild.level)
+            } else {
+                None
+            }
+        };
+
+        // Grant level up rewards outside the mutable borrow
+        if let Some(new_level) = level_up_info {
+            self.grant_level_rewards(guild_id, new_level)?;
         }
 
         Ok(())

@@ -13,8 +13,10 @@ pub struct SceneManager {
     scene_graph: Arc<RwLock<SceneGraph>>,
     culling_system: Arc<RwLock<CullingSystem>>,
     lod_system: Arc<RwLock<LODSystem>>,
+    #[allow(dead_code)]
     visibility_system: Arc<RwLock<VisibilitySystem>>,
     batching_system: Arc<RwLock<BatchingSystem>>,
+    #[allow(dead_code)]
     instancing_system: Arc<RwLock<InstancingSystem>>,
 }
 
@@ -459,7 +461,7 @@ pub struct PhysicsMaterial;
 
 impl SceneManager {
     /// Create a new scene manager
-    pub async fn new(renderer: Arc<Renderer>) -> Result<Self> {
+    pub async fn new(_renderer: Arc<Renderer>) -> Result<Self> {
         info!("🎬 Initializing Scene Manager");
 
         let scene_graph = Arc::new(RwLock::new(SceneGraph::new()));

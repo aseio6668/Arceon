@@ -106,7 +106,7 @@ impl GenericPlatformAdapter {
     }
     
     /// Build request for generic API call
-    async fn build_request(&self, endpoint_name: &str, params: HashMap<String, Value>) -> PlatformResult<reqwest::RequestBuilder> {
+    async fn build_request(&self, endpoint_name: &str, _params: HashMap<String, Value>) -> PlatformResult<reqwest::RequestBuilder> {
         let config = self.config.as_ref()
             .ok_or_else(|| PlatformError::InvalidConfiguration {
                 platform: self.platform_id.as_str().to_string(),
@@ -192,7 +192,7 @@ impl GenericPlatformAdapter {
             AuthenticationType::Custom { handler_name } => {
                 if let Some(handler) = self.custom_handlers.get(handler_name) {
                     let params = HashMap::new();
-                    let auth_result = handler.handle("authenticate_request", params).await?;
+                    let _auth_result = handler.handle("authenticate_request", params).await?;
                     // Apply authentication based on handler result
                     Ok(builder)
                 } else {

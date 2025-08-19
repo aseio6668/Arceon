@@ -405,7 +405,7 @@ impl PvPSystem {
     }
 
     /// Create custom match
-    pub fn create_custom_match(&mut self, organizer_id: Uuid, settings: MatchSettings, 
+    pub fn create_custom_match(&mut self, _organizer_id: Uuid, settings: MatchSettings, 
                               combat_mode: CombatMode) -> Result<Uuid> {
         let match_id = Uuid::new_v4();
         
@@ -534,7 +534,7 @@ impl PvPSystem {
     }
 
     /// Get player ranking information
-    fn get_player_ranking(&self, player_id: Uuid) -> PvPRanking {
+    fn get_player_ranking(&self, _player_id: Uuid) -> PvPRanking {
         // Default ranking for new players
         PvPRanking {
             current_rating: 1000, // Starting rating
@@ -553,13 +553,13 @@ impl PvPSystem {
     }
 
     /// Get match history for player
-    fn get_match_history(&self, player_id: Uuid, limit: usize) -> Vec<MatchResult> {
+    fn get_match_history(&self, _player_id: Uuid, _limit: usize) -> Vec<MatchResult> {
         // In real implementation, would query match database
         vec![] // Placeholder
     }
 
     /// Calculate combat statistics
-    fn calculate_combat_stats(&self, player_id: Uuid) -> CombatStats {
+    fn calculate_combat_stats(&self, _player_id: Uuid) -> CombatStats {
         // In real implementation, would aggregate from match history
         CombatStats {
             total_matches: 0,

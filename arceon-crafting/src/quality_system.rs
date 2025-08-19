@@ -672,7 +672,7 @@ impl QualitySystem {
         defect_type: String,
         severity: DefectSeverity,
         description: String,
-        discoverer_id: Uuid,
+        _discoverer_id: Uuid,
         discovery_stage: DiscoveryStage,
     ) -> Result<Uuid> {
         let defect_id = Uuid::new_v4();
@@ -716,7 +716,7 @@ impl QualitySystem {
     }
 
     /// Calculate overall quality score for a product category
-    pub fn calculate_category_quality_score(&self, category: &str) -> f64 {
+    pub fn calculate_category_quality_score(&self, _category: &str) -> f64 {
         // Implementation would aggregate quality data across category
         0.85 // Simplified return value
     }
@@ -773,7 +773,7 @@ impl QualitySystem {
         Ok(())
     }
 
-    fn update_defect_statistics(&mut self, defect_type: &str, severity: &DefectSeverity) {
+    fn update_defect_statistics(&mut self, _defect_type: &str, _severity: &DefectSeverity) {
         // Update defect tracking statistics
         // Implementation would maintain counts and rates by type and severity
     }

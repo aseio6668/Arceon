@@ -967,7 +967,7 @@ impl BalanceManager {
     }
 
     /// Create balance adjustment recommendation
-    pub fn recommend_balance_adjustment(&self, combat_mode: &CombatMode, problem: &BalanceProblem) -> Result<BalanceAdjustment> {
+    pub fn recommend_balance_adjustment(&self, _combat_mode: &CombatMode, problem: &BalanceProblem) -> Result<BalanceAdjustment> {
         let adjustment_id = Uuid::new_v4();
         
         let (adjustment_type, changes, rationale) = match problem.problem_type {

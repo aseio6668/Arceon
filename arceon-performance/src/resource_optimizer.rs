@@ -991,7 +991,7 @@ impl ResourceOptimizer {
 
         // Thread pool allocation
         {
-            let cpu_manager = self.cpu_manager.write().await;
+            let _cpu_manager = self.cpu_manager.write().await;
             // Adjust CPU resources based on thread pool size
         }
 
@@ -1003,7 +1003,7 @@ impl ResourceOptimizer {
 
         // Cache allocation
         {
-            let memory_manager = self.memory_manager.write().await;
+            let _memory_manager = self.memory_manager.write().await;
             // Adjust cache sizes
         }
 

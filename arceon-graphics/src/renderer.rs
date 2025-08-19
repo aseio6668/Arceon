@@ -431,7 +431,7 @@ impl Renderer {
     }
 
     /// Create render pipelines
-    async fn create_pipelines(device: &Device, config: &SurfaceConfiguration) -> Result<RenderPipelines> {
+    async fn create_pipelines(device: &Device, _config: &SurfaceConfiguration) -> Result<RenderPipelines> {
         // Geometry pipeline (basic for now)
         let geometry_shader = device.create_shader_module(ShaderModuleDescriptor {
             label: Some("Geometry Shader"),

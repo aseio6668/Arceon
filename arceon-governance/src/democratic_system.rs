@@ -517,7 +517,7 @@ impl DemocraticSystem {
         &mut self,
         budget_name: String,
         total_budget: f64,
-        eligible_participants: Vec<Uuid>,
+        _eligible_participants: Vec<Uuid>,
     ) -> Result<Uuid> {
         let project_id = Uuid::new_v4();
 
@@ -680,12 +680,13 @@ impl DemocraticSystem {
         Ok(())
     }
 
-    fn verify_candidate_eligibility(&self, _citizen_id: Uuid, office: &Office) -> Result<()> {
+    fn verify_candidate_eligibility(&self, _citizen_id: Uuid, _office: &Office) -> Result<()> {
         // Verify eligibility requirements for the office
         // Check age, citizenship, residency, etc.
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn validate_election_setup(&self, _election: &Election) -> Result<()> {
         // Validate that election is properly configured
         Ok(())

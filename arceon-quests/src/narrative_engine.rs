@@ -876,7 +876,7 @@ impl NarrativeEngine {
     fn apply_character_change(&mut self, character_id: NPCId, change: &CharacterChange) -> Result<()> {
         if let Some(character) = self.character_database.characters.get_mut(&character_id) {
             match &change.aspect {
-                CharacterAspect::Personality(trait_name) => {
+                CharacterAspect::Personality(_trait_name) => {
                     // Modify personality trait (simplified)
                     match change.change_type {
                         ChangeType::Increase => {
@@ -934,7 +934,7 @@ impl NarrativeEngine {
     }
 
     /// Generate dialogue text based on character and context
-    fn generate_dialogue_text(&self, character: &Character, relationship: Option<&Relationship>, context: &str) -> Result<String> {
+    fn generate_dialogue_text(&self, _character: &Character, relationship: Option<&Relationship>, context: &str) -> Result<String> {
         let base_greeting = match relationship {
             Some(rel) if rel.trust_level > 0.5 => "Hello, my trusted friend!",
             Some(rel) if rel.trust_level < -0.5 => "What do you want now?",
@@ -1030,6 +1030,7 @@ impl NarrativeEngine {
     }
 
     /// Determine relationship type based on values
+    #[allow(dead_code)]
     fn determine_relationship_type(&self, relationship: &Relationship) -> RelationshipType {
         if relationship.trust_level < -0.7 || relationship.affection < -0.7 {
             RelationshipType::Enemy

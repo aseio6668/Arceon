@@ -410,7 +410,7 @@ impl InteractionProcessor {
         }
     }
 
-    fn process_runestone_activation(&self, command: &GameCommand, entity: &mut EntityState) -> CommandResult {
+    fn process_runestone_activation(&self, command: &GameCommand, _entity: &mut EntityState) -> CommandResult {
         let runestone_id = command.parameters.get("runestone_id");
         if let Some(_id) = runestone_id {
             CommandResult::Success("Attempting to activate runestone".to_string())
@@ -419,7 +419,7 @@ impl InteractionProcessor {
         }
     }
 
-    fn process_ring_study(&self, command: &GameCommand, entity: &mut EntityState) -> CommandResult {
+    fn process_ring_study(&self, command: &GameCommand, _entity: &mut EntityState) -> CommandResult {
         let hours = command.parameters.get("hours")
             .and_then(|h| h.parse::<f64>().ok())
             .unwrap_or(1.0);

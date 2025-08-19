@@ -480,11 +480,11 @@ impl PolicyEnforcementSystem {
         Ok(violation_id)
     }
 
-    pub fn investigate_violation(&mut self, violation_id: Uuid) -> Result<(), String> {
+    pub fn investigate_violation(&mut self, _violation_id: Uuid) -> Result<(), String> {
         Ok(())
     }
 
-    pub fn impose_penalty(&mut self, violation_id: Uuid, penalty_type: String, severity: SeverityLevel) -> Result<Uuid, String> {
+    pub fn impose_penalty(&mut self, _violation_id: Uuid, penalty_type: String, severity: SeverityLevel) -> Result<Uuid, String> {
         let penalty = ImposedPenalty {
             penalty_id: Uuid::new_v4(),
             penalty_type,
@@ -500,7 +500,7 @@ impl PolicyEnforcementSystem {
         Ok(penalty_id)
     }
 
-    pub fn file_appeal(&mut self, violation_id: Uuid, appellant_id: Uuid, grounds: Vec<String>) -> Result<Uuid, String> {
+    pub fn file_appeal(&mut self, _violation_id: Uuid, appellant_id: Uuid, grounds: Vec<String>) -> Result<Uuid, String> {
         let appeal = Appeal {
             appeal_id: Uuid::new_v4(),
             appellant_id,

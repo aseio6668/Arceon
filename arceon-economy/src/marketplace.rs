@@ -586,7 +586,7 @@ impl MarketplaceSystem {
             "iron_ore", "wood", "food", "magical_crystals", "rare_gems"
         ];
 
-        for resource_name in tracked_resources {
+        for _resource_name in tracked_resources {
             let resource_id = Uuid::new_v4();
             analytics.price_history.insert(resource_id, PriceHistory {
                 resource_id,

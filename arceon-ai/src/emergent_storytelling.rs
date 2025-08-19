@@ -536,7 +536,7 @@ impl EmergentStorytellingSystem {
         
         if let Some(dialogue_engine) = generator.dialogue_engines.get(&npc_id) {
             // Create neural network prompt based on context and speaking style
-            let prompt = format!(
+            let _prompt = format!(
                 "Generate dialogue for a character with formality level {:.1}, verbosity {:.1}, and directness {:.1}. Context: {}. Previous conversation: {}",
                 dialogue_engine.speaking_style.formality_level,
                 dialogue_engine.speaking_style.verbosity,

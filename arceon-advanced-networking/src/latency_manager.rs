@@ -305,7 +305,7 @@ impl LatencyManager {
     // Private helper methods
     async fn start_latency_measurements(&self) -> Result<()> {
         let latency_measurements = self.latency_measurements.clone();
-        let server_mesh = self.server_mesh.clone();
+        let _server_mesh = self.server_mesh.clone();
 
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(10));
@@ -468,6 +468,7 @@ impl LatencyManager {
         }
     }
 
+    #[allow(dead_code)]
     fn classify_qos_level(latency: Duration) -> QoSLevel {
         let latency_ms = latency.as_millis();
         

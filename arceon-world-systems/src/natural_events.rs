@@ -534,7 +534,7 @@ impl NaturalEventsSystem {
         Ok(event_id)
     }
 
-    pub fn predict_event(&mut self, event_type: NaturalEventType, location: Vector3<f32>) -> Result<f32, String> {
+    pub fn predict_event(&mut self, event_type: NaturalEventType, _location: Vector3<f32>) -> Result<f32, String> {
         // Simple probability calculation based on historical data and current conditions
         let base_probability = match event_type {
             NaturalEventType::Earthquake => 0.001,

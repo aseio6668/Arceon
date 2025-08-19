@@ -465,7 +465,7 @@ impl GenesisWorld {
     }
 
     // Helper methods for world generation
-    fn generate_terrain_map(&self, size: &LandmassSize) -> TerrainMap {
+    fn generate_terrain_map(&self, _size: &LandmassSize) -> TerrainMap {
         // Implementation for terrain generation
         TerrainMap {
             width: 1000,

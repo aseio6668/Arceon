@@ -378,7 +378,7 @@ impl MobileUIManager {
     }
 
     /// Create default touch UI elements
-    fn create_default_touch_elements(orientation: &Orientation, scale: f32) -> Vec<TouchUIElement> {
+    fn create_default_touch_elements(_orientation: &Orientation, scale: f32) -> Vec<TouchUIElement> {
         let mut elements = Vec::new();
 
         // Virtual joystick for movement
@@ -484,7 +484,7 @@ impl MobileUIManager {
     /// Show/hide virtual keyboard
     pub fn set_virtual_keyboard(&mut self, visible: bool, keyboard_type: KeyboardType) {
         self.virtual_keyboard.visible = visible;
-        self.virtual_keyboard.keyboard_type = keyboard_type;
+        self.virtual_keyboard.keyboard_type = keyboard_type.clone();
         
         if visible {
             // Adjust UI layout for keyboard

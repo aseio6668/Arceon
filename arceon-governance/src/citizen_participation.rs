@@ -476,7 +476,7 @@ impl CitizenParticipationSystem {
         Ok(consultation_id)
     }
 
-    pub fn submit_feedback(&mut self, citizen_id: Uuid, feedback_type: FeedbackType, content: String) -> Result<Uuid, String> {
+    pub fn submit_feedback(&mut self, citizen_id: Uuid, _feedback_type: FeedbackType, _content: String) -> Result<Uuid, String> {
         let feedback_id = Uuid::new_v4();
         
         let engagement_record = EngagementRecord {
@@ -509,7 +509,7 @@ impl CitizenParticipationSystem {
         }
     }
 
-    pub fn propose_budget_project(&mut self, citizen_id: Uuid, project_description: String, budget_amount: f64) -> Result<Uuid, String> {
+    pub fn propose_budget_project(&mut self, citizen_id: Uuid, project_description: String, _budget_amount: f64) -> Result<Uuid, String> {
         let project_id = Uuid::new_v4();
         
         let contribution = CivicContribution {

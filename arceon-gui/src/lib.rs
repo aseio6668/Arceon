@@ -80,7 +80,9 @@ pub struct ArceonGui {
     area_structures: HashMap<String, Vec<PlacedStructure>>,
     
     // Network client
+    #[allow(dead_code)]
     game_client: GameClient,
+    #[allow(dead_code)]
     server_url: String,
 }
 

@@ -1011,7 +1011,7 @@ impl ReinforcementLearningAgent {
     }
 
     /// Train an agent
-    pub async fn train(&mut self, training_data: &crate::TrainingData) -> Result<crate::ModelTrainingResult> {
+    pub async fn train(&mut self, _training_data: &crate::TrainingData) -> Result<crate::ModelTrainingResult> {
         tracing::info!("Training RL agent with new data");
         
         // Implementation would perform RL training using experiences
@@ -1028,7 +1028,7 @@ impl ReinforcementLearningAgent {
     }
 
     /// Update reward structure based on adaptation context
-    pub async fn update_reward_structure(&mut self, context: &crate::AdaptationContext) -> Result<crate::AdaptationResult> {
+    pub async fn update_reward_structure(&mut self, _context: &crate::AdaptationContext) -> Result<crate::AdaptationResult> {
         tracing::info!("Updating RL reward structure");
         
         Ok(crate::AdaptationResult {
@@ -1041,11 +1041,11 @@ impl ReinforcementLearningAgent {
     }
 
     /// Select action using current policy
-    pub async fn select_action(&self, agent_id: Uuid, state: &State) -> Result<Action> {
+    pub async fn select_action(&self, agent_id: Uuid, _state: &State) -> Result<Action> {
         let agent = self.agents.get(&agent_id)
             .ok_or_else(|| anyhow::anyhow!("Agent not found: {}", agent_id))?;
         
-        let policy = agent.policy.read().await;
+        let _policy = agent.policy.read().await;
         
         // Simple epsilon-greedy action selection
         let mut rng = rand::thread_rng();
@@ -1091,7 +1091,7 @@ impl ReinforcementLearningAgent {
         }
         
         // Sample batch from experience replay
-        let batch = self.experience_replay.sample_batch(self.config.batch_size).await?;
+        let _batch = self.experience_replay.sample_batch(self.config.batch_size).await?;
         
         // Perform policy/value function update
         // This would involve neural network forward/backward passes
@@ -1147,7 +1147,7 @@ impl ExperienceReplayBuffer {
 }
 
 impl Policy {
-    fn new(policy_type: PolicyType, config: &ReinforcementLearningConfig) -> Result<Self> {
+    fn new(policy_type: PolicyType, _config: &ReinforcementLearningConfig) -> Result<Self> {
         Ok(Self {
             policy_id: Uuid::new_v4(),
             policy_type,

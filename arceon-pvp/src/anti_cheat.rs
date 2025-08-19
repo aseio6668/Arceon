@@ -836,6 +836,9 @@ impl AntiCheatSystem {
 
     /// Validate a combat event for suspicious activity
     pub fn validate_event(&mut self, match_id: MatchId, event: &CombatEvent) -> Result<bool> {
+        // Extract action type before mutable borrow
+        let action_type = self.map_combat_event_to_action(&event.event_type);
+        
         let session = self.monitoring_sessions.get_mut(&match_id)
             .ok_or_else(|| anyhow::anyhow!("No monitoring session found for match"))?;
 
@@ -848,7 +851,7 @@ impl AntiCheatSystem {
             let action = PlayerAction {
                 action_id: event.event_id,
                 timestamp: event.timestamp,
-                action_type: self.map_combat_event_to_action(&event.event_type),
+                action_type,
                 position: event.location.unwrap_or((0.0, 0.0, 0.0)),
                 target: event.target_id,
                 parameters: HashMap::new(),
@@ -964,7 +967,7 @@ impl AntiCheatSystem {
                 data_points: vec![],
                 statistical_significance: 0.0,
                 confidence_level: 0.5, // Lower confidence for player reports
-                supporting_evidence: vec![reason],
+                supporting_evidence: vec![reason.clone()],
             },
             severity: ViolationSeverity::Minor, // Initial assessment
             investigation_status: InvestigationStatus::Pending,
@@ -1037,6 +1040,14 @@ impl AntiCheatSystem {
     /// Analyze individual player's session data
     fn analyze_player_session_data(&mut self, player_id: PlayerId, 
                                   session: &MonitoringSession) -> Result<()> {
+        // Check for suspicious patterns first
+        let suspicious_count = session.suspicious_events.iter()
+            .filter(|event| event.player_id == player_id)
+            .count();
+
+        // Get performance stats for baseline update
+        let performance_stats = session.monitoring_data.performance_stats.get(&player_id).cloned();
+
         // Get or create player profile
         let profile = self.player_profiles.entry(player_id)
             .or_insert_with(|| PlayerSecurityProfile {
@@ -1068,20 +1079,15 @@ impl AntiCheatSystem {
             });
 
         // Update baseline if enough data
-        if let Some(performance_stats) = session.monitoring_data.performance_stats.get(&player_id) {
-            self.update_behavioral_baseline(&mut profile.behavioral_baseline, performance_stats);
+        if let Some(performance_stats) = performance_stats {
+            self.update_behavioral_baseline(&mut profile.behavioral_baseline, &performance_stats);
         }
 
-        // Check for suspicious patterns
-        let suspicious_count = session.suspicious_events.iter()
-            .filter(|event| event.player_id == player_id)
-            .count();
-
         if suspicious_count > 3 {
-            profile.risk_level = match profile.risk_level {
+            profile.risk_level = match profile.risk_level.clone() {
                 RiskLevel::Minimal => RiskLevel::Low,
                 RiskLevel::Low => RiskLevel::Medium,
-                _ => profile.risk_level, // Don't automatically increase beyond medium
+                _ => profile.risk_level.clone(), // Don't automatically increase beyond medium
             };
         }
 

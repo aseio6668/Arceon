@@ -725,6 +725,7 @@ impl TradingSystem {
             .map(|(trade_id, _)| *trade_id)
     }
 
+    #[allow(dead_code)]
     fn reset_settlement_on_change(&mut self, trade: &mut TradeOffer) {
         // If items were modified, reset settlement status
         trade.initiator_items.locked = false;

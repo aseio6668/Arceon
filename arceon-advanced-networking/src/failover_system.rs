@@ -473,7 +473,7 @@ impl FailoverSystem {
                 
                 // Check health of all servers
                 let mut monitor = health_monitor.write().await;
-                let state = failover_state.write().await;
+                let _state = failover_state.write().await;
                 
                 // This would perform actual health checks
                 // For now, simulate some health updates

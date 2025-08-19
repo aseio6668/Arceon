@@ -1056,7 +1056,7 @@ impl DialogueAISystem {
         Ok(crate::AIDecisionResult::default())
     }
 
-    pub async fn train_dialogue_models(&mut self, training_data: &crate::TrainingData) -> Result<crate::ModelTrainingResult> {
+    pub async fn train_dialogue_models(&mut self, _training_data: &crate::TrainingData) -> Result<crate::ModelTrainingResult> {
         tracing::info!("Training dialogue models with new data");
         
         Ok(crate::ModelTrainingResult {
@@ -1069,7 +1069,7 @@ impl DialogueAISystem {
         })
     }
 
-    pub async fn adapt_responses(&mut self, context: &crate::AdaptationContext) -> Result<crate::AdaptationResult> {
+    pub async fn adapt_responses(&mut self, _context: &crate::AdaptationContext) -> Result<crate::AdaptationResult> {
         tracing::info!("Adapting dialogue responses based on context");
         
         Ok(crate::AdaptationResult {

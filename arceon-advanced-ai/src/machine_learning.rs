@@ -822,7 +822,7 @@ impl MachineLearningEngine {
         })
     }
 
-    pub async fn train_model(&mut self, pipeline_id: &str, training_data: &TrainingData) -> Result<String> {
+    pub async fn train_model(&mut self, pipeline_id: &str, _training_data: &TrainingData) -> Result<String> {
         // Implementation would train a model using the specified pipeline
         // This is a complex operation involving data processing, model creation, and training
         let model_id = Uuid::new_v4().to_string();
@@ -832,7 +832,7 @@ impl MachineLearningEngine {
         Ok(model_id)
     }
 
-    pub async fn predict(&self, model_name: &str, features: &[f64]) -> Result<Vec<f64>> {
+    pub async fn predict(&self, model_name: &str, _features: &[f64]) -> Result<Vec<f64>> {
         // Implementation would perform inference using the specified model
         tracing::info!("Making prediction with model: {}", model_name);
         Ok(vec![0.5]) // Placeholder

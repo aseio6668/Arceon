@@ -606,7 +606,7 @@ impl SeasonalSystem {
         Ok(())
     }
 
-    pub fn calculate_crop_yield(&self, crop: &str, season: &Season) -> f32 {
+    pub fn calculate_crop_yield(&self, _crop: &str, season: &Season) -> f32 {
         let base_yield = 100.0;
         let seasonal_modifier = match season {
             Season::Spring => 0.8,

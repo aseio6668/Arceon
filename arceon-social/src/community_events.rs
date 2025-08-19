@@ -161,7 +161,7 @@ pub enum DistributionMethod {
     Participation,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum EventStatus {
     Planned,
     Registration,
@@ -513,19 +513,36 @@ impl EventCoordinator {
 
     /// Register player for event
     pub fn register_for_event(&mut self, event_id: EventId, player_id: PlayerId) -> Result<()> {
-        let event = self.events.get_mut(&event_id)
-            .ok_or_else(|| anyhow::anyhow!("Event not found"))?;
+        // First check event exists and extract necessary data
+        let (registration_period, requirements, already_registered) = {
+            let event = self.events.get(&event_id)
+                .ok_or_else(|| anyhow::anyhow!("Event not found"))?;
+            
+            let already_registered = event.participants.contains_key(&player_id);
+            (event.registration.clone(), event.requirements.clone(), already_registered)
+        };
 
         // Check if registration is open
         let now = Utc::now();
-        if now < event.registration.registration_start || now > event.registration.registration_end {
+        if now < registration_period.registration_start || now > registration_period.registration_end {
             return Err(anyhow::anyhow!("Registration is not currently open"));
         }
 
         // Check if already registered
-        if event.participants.contains_key(&player_id) {
+        if already_registered {
             return Err(anyhow::anyhow!("Already registered for this event"));
         }
+
+        // Check requirements before mutable borrow
+        for requirement in &requirements {
+            if requirement.mandatory && !self.check_requirement(player_id, requirement)? {
+                return Err(anyhow::anyhow!("Does not meet requirement: {}", requirement.description));
+            }
+        }
+
+        // Now get mutable reference to event
+        let event = self.events.get_mut(&event_id)
+            .ok_or_else(|| anyhow::anyhow!("Event not found"))?;
 
         // Check capacity
         if let Some(max_capacity) = event.capacity.maximum_participants {
@@ -537,13 +554,6 @@ impl EventCoordinator {
                 } else {
                     return Err(anyhow::anyhow!("Event is at full capacity"));
                 }
-            }
-        }
-
-        // Check requirements
-        for requirement in &event.requirements {
-            if requirement.mandatory && !self.check_requirement(player_id, requirement)? {
-                return Err(anyhow::anyhow!("Does not meet requirement: {}", requirement.description));
             }
         }
 
@@ -642,23 +652,27 @@ impl EventCoordinator {
 
     /// End event and distribute rewards
     pub fn end_event(&mut self, event_id: EventId) -> Result<()> {
-        let event = self.events.get_mut(&event_id)
-            .ok_or_else(|| anyhow::anyhow!("Event not found"))?;
+        let (rewards, attendees) = {
+            let event = self.events.get_mut(&event_id)
+                .ok_or_else(|| anyhow::anyhow!("Event not found"))?;
 
-        event.status = EventStatus::Completed;
-        event.actual_end = Some(Utc::now());
+            event.status = EventStatus::Completed;
+            event.actual_end = Some(Utc::now());
 
-        // Mark confirmed participants as attended
-        let mut attendees = vec![];
-        for (player_id, status) in &mut event.participants {
-            if matches!(status, ParticipantStatus::Confirmed) {
-                *status = ParticipantStatus::Attended;
-                attendees.push(*player_id);
+            // Mark confirmed participants as attended
+            let mut attendees = vec![];
+            for (player_id, status) in &mut event.participants {
+                if matches!(status, ParticipantStatus::Confirmed) {
+                    *status = ParticipantStatus::Attended;
+                    attendees.push(*player_id);
+                }
             }
-        }
 
-        // Distribute rewards
-        for reward in &event.rewards {
+            (event.rewards.clone(), attendees)
+        };
+
+        // Distribute rewards outside the mutable borrow
+        for reward in &rewards {
             self.distribute_reward(event_id, reward, &attendees)?;
         }
 
@@ -756,31 +770,37 @@ impl EventCoordinator {
 
     /// Generate next occurrence of recurring event
     pub fn generate_next_occurrence(&mut self, recurring_id: Uuid) -> Result<EventId> {
-        let recurring_event = self.recurring_events.get_mut(&recurring_id)
-            .ok_or_else(|| anyhow::anyhow!("Recurring event not found"))?;
+        let (template, next_start) = {
+            let recurring_event = self.recurring_events.get(&recurring_id)
+                .ok_or_else(|| anyhow::anyhow!("Recurring event not found"))?;
 
-        let next_start = recurring_event.next_occurrence;
-        let next_end = next_start + Duration::hours(recurring_event.base_event_template.default_duration_hours as i64);
+            let next_start = recurring_event.next_occurrence;
+            (recurring_event.base_event_template.clone(), next_start)
+        };
+
+        let next_end = next_start + Duration::hours(template.default_duration_hours as i64);
 
         // Create event from template
         let event_id = self.create_event(
             Uuid::new_v4(), // System organizer
-            recurring_event.base_event_template.name.clone(),
-            recurring_event.base_event_template.description.clone(),
-            recurring_event.base_event_template.event_type.clone(),
+            template.name.clone(),
+            template.description.clone(),
+            template.event_type.clone(),
             next_start,
             next_end,
         )?;
 
         // Apply template settings to the event
         if let Some(event) = self.events.get_mut(&event_id) {
-            event.capacity = recurring_event.base_event_template.default_capacity.clone();
-            event.requirements = recurring_event.base_event_template.suggested_requirements.clone();
-            event.rewards = recurring_event.base_event_template.suggested_rewards.clone();
-            event.rules = recurring_event.base_event_template.default_rules.clone();
+            event.capacity = template.default_capacity.clone();
+            event.requirements = template.suggested_requirements.clone();
+            event.rewards = template.suggested_rewards.clone();
+            event.rules = template.default_rules.clone();
         }
 
-        // Update next occurrence time
+        // Update next occurrence time (get mutable reference again)
+        let recurring_event = self.recurring_events.get_mut(&recurring_id)
+            .ok_or_else(|| anyhow::anyhow!("Recurring event not found"))?;
         recurring_event.next_occurrence = match &recurring_event.recurrence_pattern {
             RecurrencePattern::Daily => next_start + Duration::days(1),
             RecurrencePattern::Weekly { .. } => next_start + Duration::weeks(1),

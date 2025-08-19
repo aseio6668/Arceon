@@ -66,7 +66,7 @@ impl WorldSystemsManager {
         Ok(())
     }
 
-    pub fn update(&mut self, delta_time: f64) -> Result<(), String> {
+    pub fn update(&mut self, _delta_time: f64) -> Result<(), String> {
         let now = Utc::now();
         let actual_delta = now.signed_duration_since(self.last_update).num_seconds() as f64;
         let scaled_delta = actual_delta * self.time_scale;
@@ -101,7 +101,7 @@ impl WorldSystemsManager {
             season: self.seasons.get_season(zone_id).cloned(),
             active_events: self.natural_events.active_events
                 .iter()
-                .filter(|e| {
+                .filter(|_e| {
                     // Check if event affects this zone (simplified)
                     true
                 })
@@ -170,7 +170,7 @@ impl WorldSystemsManager {
         self.time_scale = scale.max(0.0f64).min(100.0f64);
     }
 
-    pub fn get_disaster_risk(&mut self, zone_id: Uuid) -> HashMap<NaturalEventType, f32> {
+    pub fn get_disaster_risk(&mut self, _zone_id: Uuid) -> HashMap<NaturalEventType, f32> {
         let mut risks = HashMap::new();
         
         // Calculate risk for various disaster types

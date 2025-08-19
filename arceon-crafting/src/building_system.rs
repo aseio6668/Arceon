@@ -653,7 +653,7 @@ impl BuildingSystem {
         let project = self.construction_projects.get(&project_id)
             .ok_or_else(|| anyhow::anyhow!("Construction project not found"))?;
 
-        let building_instance = BuildingInstance {
+        let _building_instance = BuildingInstance {
             instance_id: Uuid::new_v4(),
             template_id: project.template_id,
             owner_id: project.builder_id,

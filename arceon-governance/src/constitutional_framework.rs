@@ -572,7 +572,7 @@ impl ConstitutionalFramework {
         }
     }
 
-    pub fn check_constitutionality(&self, proposed_law: &str) -> Result<bool, String> {
+    pub fn check_constitutionality(&self, _proposed_law: &str) -> Result<bool, String> {
         Ok(true)
     }
 

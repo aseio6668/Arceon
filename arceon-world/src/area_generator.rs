@@ -9,6 +9,7 @@ use uuid::Uuid;
 
 pub struct AreaGenerator {
     name_generator: NameGenerator,
+    #[allow(dead_code)]
     rng: rand::rngs::ThreadRng,
 }
 
@@ -57,7 +58,7 @@ impl AreaGenerator {
     }
     
     /// Generate connections for a specific area
-    fn generate_connections_for_area(&mut self, area: &Area, all_area_ids: &[Uuid], all_areas: &[Area]) -> Vec<AreaConnection> {
+    fn generate_connections_for_area(&mut self, area: &Area, _all_area_ids: &[Uuid], all_areas: &[Area]) -> Vec<AreaConnection> {
         let mut connections = Vec::new();
         
         // Connect to nearby areas based on area type and culture

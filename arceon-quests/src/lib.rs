@@ -228,7 +228,7 @@ pub enum ConsequenceType {
     DialogueChange,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum QuestStatus {
     Available,
     Active,

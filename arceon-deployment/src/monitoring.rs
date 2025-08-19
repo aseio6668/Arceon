@@ -374,7 +374,7 @@ impl MonitoringSystem {
     }
 
     pub async fn get_current_metrics(&self) -> Result<SystemMetrics> {
-        let collector = self.metrics_collector.read().await;
+        let _collector = self.metrics_collector.read().await;
 
         // Collect current metrics
         let system_metrics = SystemMetrics {
@@ -432,7 +432,7 @@ impl MonitoringSystem {
                 interval.tick().await;
                 
                 // Check alert rules
-                let alerting_system = alerting.write().await;
+                let _alerting_system = alerting.write().await;
                 
                 for rule in &rules {
                     if rule.enabled {

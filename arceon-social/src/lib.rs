@@ -17,8 +17,8 @@ pub mod guild_system;
 pub mod friendship_network;
 pub mod communication;
 pub mod community_events;
-pub mod reputation_system;
-pub mod social_matching;
+// pub mod reputation_system; // TODO: implement
+// pub mod social_matching; // TODO: implement
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -32,8 +32,8 @@ pub struct SocialSystem {
     pub friendship_network: friendship_network::FriendshipNetwork,
     pub communication_hub: communication::CommunicationHub,
     pub event_coordinator: community_events::EventCoordinator,
-    pub reputation_system: reputation_system::ReputationSystem,
-    pub social_matching: social_matching::SocialMatching,
+    // pub reputation_system: reputation_system::ReputationSystem, // TODO: implement
+    // pub social_matching: social_matching::SocialMatching, // TODO: implement
 }
 
 /// Social interaction types
@@ -128,14 +128,14 @@ impl SocialSystem {
             friendship_network: friendship_network::FriendshipNetwork::new(),
             communication_hub: communication::CommunicationHub::new(),
             event_coordinator: community_events::EventCoordinator::new(),
-            reputation_system: reputation_system::ReputationSystem::new(),
-            social_matching: social_matching::SocialMatching::new(),
+            // reputation_system: reputation_system::ReputationSystem::new(), // TODO: implement
+            // social_matching: social_matching::SocialMatching::new(), // TODO: implement
         }
     }
 
     /// Process social interaction
     pub fn process_interaction(&mut self, interaction: SocialInteractionType, participants: Vec<Uuid>) -> Result<()> {
-        let activity = SocialActivity {
+        let _activity = SocialActivity {
             activity_id: Uuid::new_v4(),
             participant_ids: participants.clone(),
             activity_type: interaction.clone(),
@@ -157,8 +157,8 @@ impl SocialSystem {
                 }
             },
             SocialInteractionType::ReputationChange => {
-                for participant in &participants {
-                    self.reputation_system.update_reputation(*participant, 1.0)?;
+                for _participant in &participants {
+                    // self.reputation_system.update_reputation(*participant, 1.0)?; // TODO: implement
                 }
             },
             _ => {
@@ -168,8 +168,8 @@ impl SocialSystem {
         }
 
         // Update social matching recommendations
-        for participant in &participants {
-            self.social_matching.update_player_activity(*participant, &activity)?;
+        for _participant in &participants {
+            // self.social_matching.update_player_activity(*participant, &activity)?; // TODO: implement
         }
 
         Ok(())
@@ -183,8 +183,8 @@ impl SocialSystem {
             guilds_joined: self.guild_manager.get_guild_memberships(player_id).len() as u32,
             events_attended: self.event_coordinator.get_event_participation_count(player_id),
             messages_sent: self.communication_hub.get_message_count(player_id),
-            reputation_score: self.reputation_system.get_reputation_score(player_id).unwrap_or(0.0),
-            influence_rating: self.reputation_system.get_influence_rating(player_id).unwrap_or(0.0),
+            reputation_score: 0.0, // self.reputation_system.get_reputation_score(player_id).unwrap_or(0.0), // TODO: implement
+            influence_rating: 0.0, // self.reputation_system.get_influence_rating(player_id).unwrap_or(0.0), // TODO: implement
             community_contributions: 0, // Placeholder
         };
 
@@ -200,11 +200,11 @@ impl SocialSystem {
     }
 
     /// Get social recommendations for player
-    pub fn get_social_recommendations(&self, player_id: Uuid) -> Vec<SocialRecommendation> {
+    pub fn get_social_recommendations(&self, _player_id: Uuid) -> Vec<SocialRecommendation> {
         let mut recommendations = vec![];
 
         // Friend recommendations
-        let friend_suggestions = self.social_matching.get_friend_recommendations(player_id, 5);
+        let friend_suggestions = vec![]; // self.social_matching.get_friend_recommendations(player_id, 5); // TODO: implement
         for suggestion in friend_suggestions {
             recommendations.push(SocialRecommendation {
                 recommendation_type: RecommendationType::FriendSuggestion,
@@ -215,7 +215,7 @@ impl SocialSystem {
         }
 
         // Guild recommendations
-        let guild_suggestions = self.social_matching.get_guild_recommendations(player_id, 3);
+        let guild_suggestions = vec![]; // self.social_matching.get_guild_recommendations(player_id, 3) // TODO: implement;
         for suggestion in guild_suggestions {
             recommendations.push(SocialRecommendation {
                 recommendation_type: RecommendationType::GuildSuggestion,

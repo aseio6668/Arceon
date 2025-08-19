@@ -139,7 +139,7 @@ pub enum HealthCheckType {
     },
     TCP { port: u16 },
     UDP { port: u16, payload: Option<Vec<u8>> },
-    gRPC { service: String, method: String },
+    GRPC { service: String, method: String },
     Script { command: String, args: Vec<String> },
     Custom { checker: String },
 }
@@ -427,7 +427,7 @@ impl ServiceDiscovery {
     // Private helper methods
     async fn start_discovery_loop(&self) -> Result<()> {
         let registry = self.registry.clone();
-        let backends = self.discovery_backends.len();
+        let _backends = self.discovery_backends.len();
         let discovery_interval = self.config.discovery_interval;
 
         tokio::spawn(async move {
@@ -633,12 +633,12 @@ impl ServiceDiscovery {
                 tokio::time::timeout(check.timeout, tokio::net::TcpStream::connect(addr)).await??;
                 Ok(())
             }
-            HealthCheckType::UDP { port, payload: _ } => {
+            HealthCheckType::UDP { port: _, payload: _ } => {
                 // Implementation would send UDP packet and wait for response
                 Ok(())
             }
-            HealthCheckType::gRPC { service: _, method: _ } => {
-                // Implementation would make gRPC health check call
+            HealthCheckType::GRPC { service: _, method: _ } => {
+                // Implementation would make GRPC health check call
                 Ok(())
             }
             HealthCheckType::Script { command: _, args: _ } => {

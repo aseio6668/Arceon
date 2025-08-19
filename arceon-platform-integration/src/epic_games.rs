@@ -272,7 +272,7 @@ impl EpicGamesAdapter {
     }
     
     /// Submit achievements to Epic Games Services
-    async fn submit_achievements(&self, account_id: &str, access_token: &str, achievements: &[Achievement]) -> PlatformResult<()> {
+    async fn submit_achievements(&self, _account_id: &str, access_token: &str, achievements: &[Achievement]) -> PlatformResult<()> {
         let config = self.config.as_ref().unwrap();
         let product_id = &config.app_id;
         

@@ -18,6 +18,7 @@ struct CreatePlayerRequest {
 #[derive(Deserialize)]
 struct CreatePlayerResponse {
     success: bool,
+    #[allow(dead_code)]
     being_id: Option<String>,
     message: String,
 }

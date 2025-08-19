@@ -633,8 +633,8 @@ impl LoadBalancer {
         best_server.ok_or_else(|| anyhow::anyhow!("No healthy servers available"))
     }
 
-    async fn weighted_round_robin_selection(&self, weights: HashMap<String, u32>) -> Result<LoadBalancedServer> {
-        let pool = self.server_pool.read().await;
+    async fn weighted_round_robin_selection(&self, _weights: HashMap<String, u32>) -> Result<LoadBalancedServer> {
+        let _pool = self.server_pool.read().await;
         
         // Implementation would use weighted selection algorithm
         // For now, fall back to regular round robin
@@ -689,7 +689,7 @@ impl LoadBalancer {
         self.geographic_proximity_selection(context).await
     }
 
-    async fn calculate_geographic_score(&self, server: &LoadBalancedServer, player_location: &GeoLocation) -> f32 {
+    async fn calculate_geographic_score(&self, server: &LoadBalancedServer, _player_location: &GeoLocation) -> f32 {
         // Simple scoring based on latency and load
         let load_factor = 1.0 - (server.current_connections as f32 / server.endpoint.capacity as f32);
         let latency_factor = 1.0 - (server.endpoint.latency_score / 1000.0); // Normalize latency

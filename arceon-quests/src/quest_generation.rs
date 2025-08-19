@@ -542,7 +542,7 @@ impl QuestGenerator {
     fn create_quest_from_template(
         &self,
         template: &QuestTemplate,
-        player_id: PlayerId,
+        _player_id: PlayerId,
         context: &GenerationContext,
         profile: &PlayerProfile,
     ) -> Result<Quest> {
@@ -643,7 +643,7 @@ impl QuestGenerator {
     fn generate_objective_target(&self, target_type: &TargetType) -> Result<ObjectiveTarget> {
         match target_type {
             TargetType::Category(category) => Ok(ObjectiveTarget::Monster(category.clone())),
-            TargetType::Fixed(target) => Ok(ObjectiveTarget::Item(Uuid::new_v4())), // Placeholder
+            TargetType::Fixed(_target) => Ok(ObjectiveTarget::Item(Uuid::new_v4())), // Placeholder
             TargetType::Dynamic => Ok(ObjectiveTarget::Location(Uuid::new_v4())), // Placeholder
             TargetType::Random => Ok(ObjectiveTarget::Area("random_area".to_string())),
         }
@@ -699,7 +699,7 @@ impl QuestGenerator {
     }
 
     /// Generate quest requirements from template
-    fn generate_requirements(&self, template: &QuestTemplate, profile: &PlayerProfile) -> Result<QuestRequirements> {
+    fn generate_requirements(&self, template: &QuestTemplate, _profile: &PlayerProfile) -> Result<QuestRequirements> {
         let level = template.requirement_rules.level_requirements.as_ref()
             .map(|req| req.minimum);
 
@@ -881,7 +881,7 @@ impl QuestGenerator {
         if let Some(quest_ids) = self.player_quests.get(&player_id) {
             quest_ids.iter()
                 .filter_map(|id| self.active_quests.get(id))
-                .filter(|quest| matches!(&quest.status, status))
+                .filter(|quest| quest.status == status)
                 .collect()
         } else {
             vec![]
@@ -889,7 +889,7 @@ impl QuestGenerator {
     }
 
     /// Get available quests for player at location
-    pub fn get_available_quests(&self, player_id: PlayerId, location_id: Option<LocationId>) -> Result<Vec<Quest>> {
+    pub fn get_available_quests(&self, _player_id: PlayerId, _location_id: Option<LocationId>) -> Result<Vec<Quest>> {
         // For now, return some sample available quests
         // In a real implementation, this would query available quests based on location, NPCs, etc.
         Ok(vec![])

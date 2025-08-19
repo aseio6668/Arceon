@@ -425,7 +425,7 @@ impl IndexingEngine {
         }
 
         // Add removal suggestions for redundant indexes
-        for duplicate in redundant_indexes.duplicate_indexes {
+        for _duplicate in redundant_indexes.duplicate_indexes {
             // Create removal suggestions
         }
 
@@ -467,14 +467,14 @@ impl IndexingEngine {
         let index_name = format!("idx_{}_{}", table, columns.join("_"));
         
         // Generate SQL for index creation based on database type
-        let sql = self.generate_create_index_sql(&index_name, table, columns)?;
+        let _sql = self.generate_create_index_sql(&index_name, table, columns)?;
         
         // Execute index creation (would integrate with actual database)
         tracing::info!("Creating index: {} on table: {} for columns: {:?}", 
                        index_name, table, columns);
         
         // Track the new index
-        let metadata = IndexMetadata {
+        let _metadata = IndexMetadata {
             index_name: index_name.clone(),
             table_name: table.to_string(),
             database_type: DatabaseType::PostgreSQL, // Default

@@ -510,7 +510,7 @@ impl AdaptiveBehaviorSystem {
     }
 
     /// Generate a behavioral adaptation based on interaction analysis
-    async fn generate_behavioral_adaptation(&self, interaction: &InteractionRecord, profile: &AdaptiveBehaviorProfile) -> Result<BehavioralAdaptation> {
+    async fn generate_behavioral_adaptation(&self, interaction: &InteractionRecord, _profile: &AdaptiveBehaviorProfile) -> Result<BehavioralAdaptation> {
         let adaptation_id = Uuid::new_v4();
         
         // Analyze what went wrong in the interaction

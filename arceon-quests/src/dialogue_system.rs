@@ -814,7 +814,7 @@ impl DialogueSystem {
     }
 
     /// Build conversation context
-    fn build_conversation_context(&self, player_id: PlayerId, npc_id: NPCId) -> Result<ConversationContext> {
+    fn build_conversation_context(&self, _player_id: PlayerId, _npc_id: NPCId) -> Result<ConversationContext> {
         Ok(ConversationContext {
             location: None, // Would be populated from player's current location
             time_of_day: 12, // Would get actual time
@@ -902,10 +902,10 @@ impl DialogueSystem {
         // In a real implementation, this would check player level, items, quests, etc.
         for _requirement in requirements {
             match _requirement {
-                ResponseRequirement::Level(level) => {
+                ResponseRequirement::Level(_level) => {
                     // Check if player level >= required level
                 },
-                ResponseRequirement::Item(item_id) => {
+                ResponseRequirement::Item(_item_id) => {
                     // Check if player has the item
                 },
                 _ => {
@@ -944,7 +944,7 @@ impl DialogueSystem {
     }
 
     /// Determine next dialogue node based on response
-    fn determine_next_node(&self, conversation: &ActiveConversation, response: &DialogueResponse) -> Result<String> {
+    fn determine_next_node(&self, _conversation: &ActiveConversation, response: &DialogueResponse) -> Result<String> {
         if response.leads_to.is_empty() {
             return Ok("end".to_string());
         }
@@ -1022,10 +1022,10 @@ impl DialogueSystem {
                 DialogueCondition::FirstMeeting => {
                     // Check if this is first meeting with NPC
                 },
-                DialogueCondition::QuestActive(quest_id) => {
+                DialogueCondition::QuestActive(_quest_id) => {
                     // Check if quest is active
                 },
-                DialogueCondition::PlayerLevel(min_level, max_level) => {
+                DialogueCondition::PlayerLevel(_min_level, _max_level) => {
                     // Check player level range
                 },
                 _ => {

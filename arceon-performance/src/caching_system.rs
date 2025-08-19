@@ -401,21 +401,21 @@ impl CachingSystem {
     }
 
     // Internal helper methods
-    async fn update_access_pattern(&self, key: &str, level: CacheLevel) {
+    async fn update_access_pattern(&self, _key: &str, _level: CacheLevel) {
         // Update access patterns for predictive caching
     }
 
-    async fn promote_to_memory(&self, key: &str, entry: &CacheEntry) -> Result<()> {
+    async fn promote_to_memory(&self, _key: &str, _entry: &CacheEntry) -> Result<()> {
         // Promote entry to memory cache if it meets criteria
         Ok(())
     }
 
-    async fn promote_based_on_pattern(&self, key: &str, entry: &CacheEntry) -> Result<()> {
+    async fn promote_based_on_pattern(&self, _key: &str, _entry: &CacheEntry) -> Result<()> {
         // Promote based on access pattern analysis
         Ok(())
     }
 
-    async fn determine_optimal_cache_level(&self, entry: &CacheEntry) -> CacheLevel {
+    async fn determine_optimal_cache_level(&self, _entry: &CacheEntry) -> CacheLevel {
         // Determine best cache level based on entry characteristics
         CacheLevel::Hot
     }

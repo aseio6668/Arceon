@@ -32,7 +32,7 @@ impl PriceEngine {
         }
     }
 
-    pub async fn calculate_dynamic_price(&self, resource_id: Uuid, context: PricingContext) -> Result<f64> {
+    pub async fn calculate_dynamic_price(&self, _resource_id: Uuid, context: PricingContext) -> Result<f64> {
         // Simplified price calculation
         Ok(context.base_price * context.supply_demand_factor)
     }

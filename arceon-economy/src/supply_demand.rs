@@ -676,7 +676,7 @@ impl SupplyDemandEngine {
 
     /// Identify arbitrage opportunities
     pub async fn identify_arbitrage_opportunities(&self) -> Result<Vec<ArbitrageOpportunity>> {
-        let price_calculator = self.price_calculator.read().await;
+        let _price_calculator = self.price_calculator.read().await;
         
         // Simplified arbitrage detection
         // In a real implementation, this would compare prices across all markets

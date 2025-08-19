@@ -409,7 +409,7 @@ impl VotingMechanismSystem {
         delegation_chain: Option<DelegationChain>,
         ballot_choices: Option<BallotChoices>,
     ) -> Result<LiquidVoteResult> {
-        let active_vote = self.active_votes.get_mut(&vote_id)
+        let _active_vote = self.active_votes.get_mut(&vote_id)
             .ok_or_else(|| anyhow::anyhow!("Vote not found"))?;
 
         if let Some(choices) = ballot_choices {

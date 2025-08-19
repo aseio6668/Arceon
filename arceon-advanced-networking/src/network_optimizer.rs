@@ -316,7 +316,7 @@ impl NetworkOptimizer {
     }
 
     async fn start_quality_adaptation(&self) -> Result<()> {
-        let quality_adapter = self.quality_adapter.clone();
+        let _quality_adapter = self.quality_adapter.clone();
         let bandwidth_monitor = self.bandwidth_monitor.clone();
 
         tokio::spawn(async move {
@@ -326,7 +326,7 @@ impl NetworkOptimizer {
                 interval.tick().await;
                 
                 // Check if quality adaptation is needed
-                let network_conditions = {
+                let _network_conditions = {
                     let monitor = bandwidth_monitor.read().await;
                     NetworkConditions {
                         bandwidth: monitor.current_bandwidth,

@@ -245,7 +245,7 @@ impl AiNpc {
 
     fn plan_action_for_goal(&self, goal: &Goal) -> Option<NpcAction> {
         match &goal.goal_type {
-            GoalType::LearnSkill(skill, target_level) => {
+            GoalType::LearnSkill(skill, _target_level) => {
                 Some(NpcAction::PracticeSkill(*skill))
             }
             GoalType::CraftItem(item_name) => {

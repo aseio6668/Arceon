@@ -622,7 +622,7 @@ impl PerformanceMonitor {
 
     /// Collect current performance metrics
     pub async fn collect_metrics(&self) -> Result<PerformanceMetrics> {
-        let now = Utc::now();
+        let _now = Utc::now();
         
         // Collect from all metric collectors
         let mut all_samples = Vec::new();
@@ -711,8 +711,8 @@ impl PerformanceMonitor {
         
         // Clone necessary data for the monitoring task
         let collectors = self.metric_collectors.clone();
-        let alert_manager = self.alert_manager.clone();
-        let threshold_manager = self.threshold_manager.clone();
+        let _alert_manager = self.alert_manager.clone();
+        let _threshold_manager = self.threshold_manager.clone();
         let storage = self.metrics_storage.clone();
 
         tokio::spawn(async move {

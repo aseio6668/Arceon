@@ -77,7 +77,7 @@ pub struct NetworkManager {
     // Cross-node synchronization state
     known_peers: Arc<RwLock<HashMap<PeerId, PeerInfo>>>,
     sync_state: Arc<RwLock<SyncState>>,
-    message_sender: Option<mpsc::UnboundedSender<NetworkMessage>>,
+    _message_sender: Option<mpsc::UnboundedSender<NetworkMessage>>,
     message_receiver: Option<mpsc::UnboundedReceiver<NetworkMessage>>,
     
     // Heartbeat and discovery
@@ -163,7 +163,7 @@ impl NetworkManager {
             blockchain_enabled: false,
             known_peers: Arc::new(RwLock::new(HashMap::new())),
             sync_state: Arc::new(RwLock::new(sync_state)),
-            message_sender: Some(sender),
+            _message_sender: Some(sender),
             message_receiver: Some(receiver),
             last_heartbeat: Arc::new(RwLock::new(SystemTime::now())),
             discovery_interval: Duration::from_secs(30),
@@ -282,7 +282,7 @@ impl NetworkManager {
             loop {
                 interval.tick().await;
                 
-                let blockchain_stats = BlockchainStats {
+                let _blockchain_stats = BlockchainStats {
                     total_blocks: 0,
                     last_finalized_epoch: 0,
                     pending_transactions: 0,
@@ -309,7 +309,7 @@ impl NetworkManager {
     /// Start peer discovery loop
     async fn start_peer_discovery_loop(&mut self) -> Result<()> {
         let known_peers = self.known_peers.clone();
-        let local_peer_id = self.local_peer_id.unwrap();
+        let _local_peer_id = self.local_peer_id.unwrap();
         let discovery_interval = self.discovery_interval;
         
         tokio::spawn(async move {
@@ -497,7 +497,7 @@ impl NetworkManager {
     }
     
     /// Request peer discovery from a connected peer
-    async fn request_peer_discovery(&mut self, peer_id: PeerId) -> Result<()> {
+    async fn request_peer_discovery(&mut self, _peer_id: PeerId) -> Result<()> {
         let known_peer_ids: Vec<_> = self.known_peers.read().await.keys().cloned().collect();
         
         let discovery_request = NetworkMessage::PeerDiscoveryRequest {
@@ -515,7 +515,7 @@ impl NetworkManager {
         Ok(())
     }
     
-    async fn handle_network_message(&mut self, message: NetworkMessage, sender: Option<PeerId>) -> Result<()> {
+    async fn handle_network_message(&mut self, message: NetworkMessage, _sender: Option<PeerId>) -> Result<()> {
         match message {
             // Existing game messages
             NetworkMessage::PlayerJoin { player_id, player_name, race, area_id } => {
@@ -619,7 +619,7 @@ impl NetworkManager {
     }
     
     /// Handle world state sync request
-    async fn handle_world_state_sync_request(&mut self, requester: PeerId, epoch_range: (u64, u64)) -> Result<()> {
+    async fn handle_world_state_sync_request(&mut self, _requester: PeerId, epoch_range: (u64, u64)) -> Result<()> {
         if self.blockchain_enabled {
             // This would typically fetch blocks from the blockchain manager
             // For now, we'll create a placeholder response
@@ -648,7 +648,7 @@ impl NetworkManager {
     }
     
     /// Handle world state sync response
-    async fn handle_world_state_sync_response(&mut self, blocks: Vec<FinalizedBlock>, current_state: WorldState) -> Result<()> {
+    async fn handle_world_state_sync_response(&mut self, blocks: Vec<FinalizedBlock>, _current_state: WorldState) -> Result<()> {
         let mut sync_state = self.sync_state.write().await;
         
         // Process received blocks
@@ -733,7 +733,7 @@ impl NetworkManager {
     }
     
     /// Handle peer discovery response
-    async fn handle_peer_discovery_response(&mut self, responding_peer: PeerId, peer_list: Vec<(PeerId, Multiaddr)>) -> Result<()> {
+    async fn handle_peer_discovery_response(&mut self, _responding_peer: PeerId, peer_list: Vec<(PeerId, Multiaddr)>) -> Result<()> {
         let mut peers = self.known_peers.write().await;
         
         let peer_count = peer_list.len();

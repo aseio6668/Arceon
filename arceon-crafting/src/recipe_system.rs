@@ -552,7 +552,7 @@ impl RecipeSystem {
     }
 
     /// Check if a prerequisite recipe requirement is satisfied
-    fn is_prerequisite_satisfied(&self, prereq: &PrerequisiteRecipe, crafter_id: Uuid, crafter_data: &CrafterData) -> bool {
+    fn is_prerequisite_satisfied(&self, prereq: &PrerequisiteRecipe, crafter_id: Uuid, _crafter_data: &CrafterData) -> bool {
         if let Some(mastery) = self.mastery_progression.get(&prereq.recipe_id) {
             if mastery.crafter_id == crafter_id {
                 if prereq.completion_required && mastery.successful_crafts == 0 {
@@ -663,7 +663,7 @@ impl RecipeSystem {
     }
 
     /// Generate a human-readable recommendation reason
-    fn generate_recommendation_reason(&self, recipe_id: Uuid, crafter_data: &CrafterData) -> String {
+    fn generate_recommendation_reason(&self, recipe_id: Uuid, _crafter_data: &CrafterData) -> String {
         // This would generate contextual reasons based on crafter's progress
         format!("Good skill match and progression opportunity for recipe {}", recipe_id)
     }

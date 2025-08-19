@@ -889,7 +889,7 @@ impl WorkshopManager {
             .collect()
     }
 
-    fn calculate_urgency(&self, deadline: SystemTime) -> UrgencyLevel {
+    fn calculate_urgency(&self, _deadline: SystemTime) -> UrgencyLevel {
         // Simplified urgency calculation
         UrgencyLevel::Medium
     }

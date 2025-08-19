@@ -10,6 +10,7 @@ use crate::Renderer;
 
 /// Advanced lighting system with PBR and global illumination
 pub struct LightingSystem {
+    #[allow(dead_code)]
     renderer: Arc<Renderer>,
     lights: Arc<RwLock<Vec<Light>>>,
     shadow_system: Arc<RwLock<ShadowSystem>>,

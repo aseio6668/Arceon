@@ -73,7 +73,7 @@ pub enum ChannelRole {
     Guest,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ChannelPermission {
     SendMessages,
     DeleteMessages,
@@ -502,9 +502,6 @@ impl CommunicationHub {
 
     /// Send message to channel
     pub fn send_channel_message(&mut self, channel_id: Uuid, sender_id: PlayerId, content: String) -> Result<MessageId> {
-        let channel = self.channels.get_mut(&channel_id)
-            .ok_or_else(|| anyhow::anyhow!("Channel not found"))?;
-
         // Check if user can send messages
         if !self.can_send_message(channel_id, sender_id)? {
             return Err(anyhow::anyhow!("No permission to send messages"));
@@ -515,6 +512,9 @@ impl CommunicationHub {
             return Err(anyhow::anyhow!("Rate limit exceeded"));
         }
 
+        // Extract data needed before mutable borrow
+        let mentions = self.extract_mentions(&content);
+        
         let message_id = Uuid::new_v4();
         let mut message = Message {
             message_id,
@@ -524,13 +524,17 @@ impl CommunicationHub {
             edited: false,
             edit_history: vec![],
             reactions: vec![],
-            mentions: self.extract_mentions(&content),
+            mentions,
             reply_to: None,
             moderation_status: ModerationStatus::Approved,
         };
 
         // Apply moderation
         message.moderation_status = self.moderate_message(&message)?;
+
+        // Now get mutable reference to channel
+        let channel = self.channels.get_mut(&channel_id)
+            .ok_or_else(|| anyhow::anyhow!("Channel not found"))?;
         
         if matches!(message.moderation_status, ModerationStatus::Approved | ModerationStatus::Pending) {
             channel.messages.push(message);
@@ -697,7 +701,7 @@ impl CommunicationHub {
     }
 
     /// Extract mentions from message content
-    fn extract_mentions(&self, content: &str) -> Vec<PlayerId> {
+    fn extract_mentions(&self, _content: &str) -> Vec<PlayerId> {
         // Simple mention extraction (in real implementation, would parse @username patterns)
         vec![] // Placeholder
     }

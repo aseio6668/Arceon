@@ -492,7 +492,7 @@ impl WebIntegration {
         }
     }
 
-    fn parse_browser_version(user_agent: &str) -> String {
+    fn parse_browser_version(_user_agent: &str) -> String {
         // Simple version extraction (would be more sophisticated in practice)
         "Unknown".to_string()
     }

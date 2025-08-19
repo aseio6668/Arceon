@@ -332,7 +332,7 @@ impl ProposalManagementSystem {
     /// Submit a new proposal to the system
     pub fn submit_proposal(
         &mut self,
-        proposer_id: Uuid,
+        _proposer_id: Uuid,
         proposal_content: ProposalContent,
         metadata: ProposalMetadata,
     ) -> Result<Uuid> {
@@ -507,7 +507,7 @@ impl ProposalManagementSystem {
     pub fn initiate_stakeholder_consultation(
         &mut self,
         proposal_id: Uuid,
-        consultation_design: ConsultationDesign,
+        _consultation_design: ConsultationDesign,
     ) -> Result<Uuid> {
         let consultation_id = Uuid::new_v4();
 

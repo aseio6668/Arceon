@@ -289,7 +289,7 @@ impl ConsensusAlgorithmSystem {
     pub fn advance_consensus_phase(
         &mut self,
         process_id: Uuid,
-        phase_results: PhaseResults,
+        _phase_results: PhaseResults,
     ) -> Result<ConsensusProgressReport> {
         // Validate process exists and process phase results
         {
@@ -354,7 +354,7 @@ impl ConsensusAlgorithmSystem {
         input_type: InputType,
         input_content: InputContent,
     ) -> Result<InputProcessingResult> {
-        let process = self.active_consensus_processes.get_mut(&process_id)
+        let _process = self.active_consensus_processes.get_mut(&process_id)
             .ok_or_else(|| anyhow::anyhow!("Consensus process not found"))?;
 
         // Validate participant and input
@@ -825,6 +825,7 @@ impl ConsensusAlgorithmSystem {
     }
 
     // Additional helper methods
+    #[allow(dead_code)]
     fn process_phase_results(&mut self, _process: &mut ConsensusProcess, _results: &PhaseResults) -> Result<()> {
         Ok(())
     }

@@ -753,7 +753,7 @@ impl BehaviorTreeSystem {
 }
 
 impl ExecutionContext {
-    fn new(tree_id: Uuid, blackboard_id: Uuid) -> Self {
+    fn new(tree_id: Uuid, _blackboard_id: Uuid) -> Self {
         Self {
             context_id: Uuid::new_v4(),
             tree_id,

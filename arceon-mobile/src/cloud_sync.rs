@@ -70,7 +70,7 @@ pub struct SyncItem {
 }
 
 /// Types of data that can be synchronized
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum SyncItemType {
     PlayerProfile,
     CharacterData,

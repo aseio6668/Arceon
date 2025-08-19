@@ -406,7 +406,9 @@ impl CDNIntegration {
 
 // CDN Provider Implementations
 pub struct CloudFlareProvider {
+    #[allow(dead_code)]
     api_token: String,
+    #[allow(dead_code)]
     zone_id: String,
 }
 
@@ -442,15 +444,18 @@ impl CDNProviderInterface for CloudFlareProvider {
         })
     }
 
-    async fn configure_cache_policy(&self, path: &str, policy: &CachePolicy) -> Result<()> {
+    async fn configure_cache_policy(&self, path: &str, _policy: &CachePolicy) -> Result<()> {
         debug!("Configuring cache policy for {} in CloudFlare", path);
         Ok(())
     }
 }
 
 pub struct AWSProvider {
+    #[allow(dead_code)]
     access_key: String,
+    #[allow(dead_code)]
     secret_key: String,
+    #[allow(dead_code)]
     distribution_id: String,
 }
 
@@ -486,7 +491,7 @@ impl CDNProviderInterface for AWSProvider {
         })
     }
 
-    async fn configure_cache_policy(&self, path: &str, policy: &CachePolicy) -> Result<()> {
+    async fn configure_cache_policy(&self, path: &str, _policy: &CachePolicy) -> Result<()> {
         debug!("Configuring cache policy for {} in AWS", path);
         Ok(())
     }
@@ -494,6 +499,7 @@ impl CDNProviderInterface for AWSProvider {
 
 pub struct CustomProvider {
     endpoint: String,
+    #[allow(dead_code)]
     api_key: String,
 }
 
@@ -529,7 +535,7 @@ impl CDNProviderInterface for CustomProvider {
         })
     }
 
-    async fn configure_cache_policy(&self, path: &str, policy: &CachePolicy) -> Result<()> {
+    async fn configure_cache_policy(&self, path: &str, _policy: &CachePolicy) -> Result<()> {
         debug!("Configuring cache policy for {} in custom CDN", path);
         Ok(())
     }

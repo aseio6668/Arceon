@@ -517,7 +517,7 @@ impl MobilePerformanceManager {
         })
     }
 
-    fn assess_device_limitations(platform_info: &PlatformInfo, capabilities: &DeviceCapabilities) -> DeviceLimitations {
+    fn assess_device_limitations(platform_info: &PlatformInfo, _capabilities: &DeviceCapabilities) -> DeviceLimitations {
         DeviceLimitations {
             max_fps: if matches!(platform_info.platform_type, PlatformType::Mobile { .. }) { 60 } else { 120 },
             memory_limit: platform_info.memory_total.unwrap_or(4096) * 1024 * 1024, // Convert MB to bytes
@@ -527,7 +527,7 @@ impl MobilePerformanceManager {
         }
     }
 
-    fn create_recommended_settings(device_tier: &DeviceTier, capabilities: &DeviceCapabilities) -> PerformanceSettings {
+    fn create_recommended_settings(device_tier: &DeviceTier, _capabilities: &DeviceCapabilities) -> PerformanceSettings {
         match device_tier {
             DeviceTier::LowEnd => PerformanceSettings {
                 target_fps: 30,

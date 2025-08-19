@@ -1,0 +1,17 @@
+[package]
+name = "arceon-blockchain"
+version = "0.1.0"
+edition = "2021"
+description = "Blockchain and cryptocurrency for Arceon"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+sha2 = { workspace = true }
+ed25519-dalek = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+arceon-core = { path = "../arceon-core" }

@@ -1,0 +1,18 @@
+[package]
+name = "arceon-gui"
+version = "0.1.0"
+edition = "2021"
+description = "GUI interface for Arceon using egui"
+
+[dependencies]
+eframe = { version = "0.28", features = ["glow"] }
+egui = { workspace = true }
+egui_extras = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+reqwest = { version = "0.11", features = ["json"] }
+
+arceon-core = { path = "../arceon-core" }

@@ -1,0 +1,34 @@
+[package]
+name = "arceon-progression"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced progression systems, skill trees, and character customization for Arceon MMORPG"
+authors = ["Arceon Development Team"]
+license = "MIT"
+
+[dependencies]
+arceon-core = { path = "../arceon-core" }
+arceon-ai = { path = "../arceon-ai" }
+arceon-economy = { path = "../arceon-economy" }
+arceon-world-systems = { path = "../arceon-world-systems" }
+
+# Core dependencies
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+
+# Math and algorithms
+ndarray = { version = "0.15", optional = true }
+petgraph = "0.6"
+
+# Optional advanced features
+[features]
+default = []
+advanced-math = ["ndarray"]
+analytics = ["advanced-math"]

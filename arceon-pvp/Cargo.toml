@@ -1,0 +1,25 @@
+[package]
+name = "arceon-pvp"
+version = "0.1.0"
+edition = "2021"
+description = "Player vs Player combat systems for Arceon MMORPG including matchmaking, arenas, and tournaments"
+
+[dependencies]
+# Core dependencies from workspace
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+
+# Local dependencies
+arceon-core = { path = "../arceon-core" }
+arceon-progression = { path = "../arceon-progression" }
+arceon-social = { path = "../arceon-social" }
+
+# Additional dependencies for PvP systems
+sqlx = { workspace = true }

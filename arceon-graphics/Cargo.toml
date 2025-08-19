@@ -1,0 +1,42 @@
+[package]
+name = "arceon-graphics"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced 3D graphics engine for Arceon MMORPG"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }
+wgpu = "0.19"
+winit = "0.29"
+bytemuck = { version = "1.14", features = ["derive"] }
+glam = { version = "0.24", features = ["serde"] }
+image = "0.24"
+gltf = "1.4"
+futures = "0.3"
+pollster = "0.3"
+cgmath = "0.18"
+noise = "0.8"
+rayon = "1.8"
+dashmap = "5.5"
+parking_lot = "0.12"
+fastrand = "2.0"
+arceon-core = { path = "../arceon-core" }
+
+[dependencies.wgpu-hal]
+version = "0.19"
+features = ["vulkan", "dx12", "metal"]
+
+[features]
+default = ["vulkan"]
+vulkan = ["wgpu-hal/vulkan"]
+dx12 = ["wgpu-hal/dx12"] 
+metal = ["wgpu-hal/metal"]
+raytracing = []
+hdr = []
+pbr = []
+volumetrics = []

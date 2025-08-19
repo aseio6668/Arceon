@@ -1,0 +1,34 @@
+[network]
+listen_port = 7777
+bootstrap_nodes = []
+max_peers = 50
+discovery_interval = 30
+
+[blockchain]
+data_dir = "./data/blockchain"
+genesis_block = "genesis"
+mining_difficulty = 4
+block_time = 10
+reward_amount = 100
+
+[world]
+seed = 12345
+continent_count = 5
+city_count = 20
+npc_population = 1000
+
+[world.respawn_timers]
+npc = 300
+player = 120
+beast = 180
+
+[ai]
+npc_think_interval = 5
+memory_size = 1000
+learning_rate = 0.01
+personality_variance = 0.3
+
+[database]
+data_dir = "./data/db"
+cache_size = 100000
+backup_interval = 3600

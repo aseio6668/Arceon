@@ -1,0 +1,31 @@
+[package]
+name = "arceon-crafting"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced crafting, building, and resource systems for Arceon"
+
+[dependencies]
+arceon-core = { path = "../arceon-core" }
+arceon-ai = { path = "../arceon-ai" }
+arceon-economy = { path = "../arceon-economy" }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+rand = "0.8"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Graph algorithms for crafting trees
+petgraph = "0.6"
+
+# Mathematical operations for quality calculations
+ndarray = { version = "0.15", optional = true }
+
+# Spatial indexing for building systems
+kdtree = { version = "0.7", optional = true }
+
+[features]
+default = []
+advanced-algorithms = ["ndarray", "kdtree"]

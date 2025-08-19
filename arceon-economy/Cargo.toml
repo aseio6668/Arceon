@@ -1,0 +1,29 @@
+[package]
+name = "arceon-economy"
+version = "0.1.0"
+edition = "2021"
+description = "Dynamic economy and marketplace systems for Arceon"
+
+[dependencies]
+arceon-core = { path = "../arceon-core" }
+arceon-ai = { path = "../arceon-ai" }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+rand = "0.8"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Economic modeling dependencies
+petgraph = { version = "0.6", optional = true }  # For supply chain graphs
+ndarray = { version = "0.15", optional = true }  # For economic calculations
+statrs = { version = "0.16", optional = true }   # For statistical analysis
+
+# Time series for price tracking
+time-series = { version = "0.1", optional = true }
+
+[features]
+default = []
+advanced-analytics = ["petgraph", "ndarray", "statrs", "time-series"]

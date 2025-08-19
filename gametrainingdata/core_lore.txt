@@ -1,0 +1,172 @@
+# Arceon Core Lore - Training Data for AI NPCs
+
+## The World of Arceon
+
+Arceon is a vast world where magic and reality intertwine. Ancient civilizations have risen and fallen, leaving behind ruins filled with knowledge and power. The land itself is alive, responding to the thoughts and actions of those who dwell upon it.
+
+## The Common Tongue
+
+All beings in Arceon speak the Common Tongue, a universal language that transcends racial barriers. This language was gifted by the ancient Wordweavers, magical beings who understood that communication is the foundation of civilization. NPCs must learn and master this tongue to interact with others and share knowledge.
+
+## Racial Cultures and Traits
+
+### Humans
+- Versatile and adaptable traders and diplomats
+- Excel at commerce, leadership, and forming alliances
+- Build great port cities and trading centers
+- Value innovation and exploration
+
+### Elves
+- Graceful and wise masters of magic and archery
+- Live in harmony with nature in tree cities
+- Create beautiful art and preserve ancient knowledge
+- Value wisdom, beauty, and magical study
+
+### Dwarves
+- Hardy miners and smiths, guardians of traditions
+- Master craftspeople who work with stone and metal
+- Build great underground cities and mountain fortresses
+- Value honor, craftsmanship, and clan loyalty
+
+### Orcs
+- Strong and proud fierce warriors and shamans
+- Build imposing strongholds and military compounds
+- Value strength, courage, and tribal bonds
+- Skilled in warfare and spiritual magic
+
+### Gnomes
+- Small but clever, skilled in invention and tinkering
+- Master artificers who blend magic with technology
+- Create wondrous mechanical devices and workshops
+- Value curiosity, innovation, and practical solutions
+
+### Halflings
+- Peaceful folk exceptional at stealth and cooking
+- Build comfortable villages with rich gardens
+- Value comfort, community, and simple pleasures
+- Skilled in agriculture and hospitality
+
+### Dragonborn
+- Descendants of dragons, powerful and noble
+- Possess draconic breath and scales
+- Value honor, power, and ancient draconic traditions
+- Natural leaders and powerful warriors
+
+### Tieflings
+- Touched by infernal heritage, clever and charismatic
+- Often misunderstood but highly intelligent
+- Value cunning, charm, and proving their worth
+- Skilled in magic and social manipulation
+
+## Core Skills and Their Applications
+
+### Gathering Skills
+- **Mining**: Extract ores, gems, and stone from the earth
+- **Herbalism**: Gather plants, flowers, and magical components
+- **Hunting**: Track and harvest animals for food and materials
+- **Fishing**: Catch fish and aquatic creatures from waters
+
+### Crafting Skills
+- **Blacksmithing**: Forge weapons, armor, and tools from metal
+- **Carpentry**: Work with wood to create furniture and structures
+- **Tailoring**: Sew clothing, armor, and decorative items
+- **Alchemy**: Brew potions, create magical compounds
+- **Cooking**: Prepare meals that provide benefits and nourishment
+- **Enchanting**: Imbue items with magical properties
+
+### Combat Skills
+- **Sword Fighting**: Master various blade techniques
+- **Archery**: Precision with bows and ranged weapons
+- **Defense**: Shield work and protective techniques
+- **Unarmed Combat**: Fighting without weapons
+
+### Social Skills
+- **Leadership**: Guide and inspire groups of NPCs
+- **Trade**: Negotiate and conduct business
+- **Teaching**: Share knowledge and skills with others
+- **Diplomacy**: Resolve conflicts and build alliances
+
+### Magical Skills
+- **Elemental Magic**: Control fire, water, earth, and air
+- **Nature Magic**: Commune with plants and animals
+- **Healing Magic**: Restore health and cure ailments
+- **Geomancy**: Shape and transform the land itself
+
+## NPC Archetypes and Behaviors
+
+### Farmers
+- Tend to crops and livestock
+- Maintain agricultural land and tools
+- Trade surplus food for other goods
+- Work with seasons and weather patterns
+
+### Scholars
+- Study ancient texts and magical tomes
+- Conduct research and experiments
+- Teach others their accumulated knowledge
+- Seek out new books and information
+
+### Traders
+- Buy and sell goods between settlements
+- Establish trade routes and markets
+- Negotiate prices and contracts
+- Transport valuable commodities
+
+### Artisans
+- Create beautiful and functional items
+- Develop new techniques and styles
+- Train apprentices in their crafts
+- Take pride in their creations
+
+### Warriors
+- Defend settlements and people
+- Train in combat techniques
+- Form military units and patrols
+- Uphold codes of honor and duty
+
+### Geomancers
+- Shape and transform terrain
+- Create new landscapes and features
+- Build using earth magic and stone
+- Maintain connection with the land
+
+### Druids
+- Protect natural areas and creatures
+- Communicate with ancient beings like Treants
+- Use nature magic for healing and growth
+- Form alliances with forest spirits
+
+## Social Structures and Cooperation
+
+NPCs organize themselves into various groups:
+- **Work Teams**: Coordinate tasks like mining or construction
+- **Trade Guilds**: Organize commerce and set standards
+- **Military Units**: Provide defense and security
+- **Study Groups**: Share knowledge and research
+- **Craft Circles**: Exchange techniques and materials
+
+Leaders emerge through:
+- **Election**: Groups choose their representatives
+- **Appointment**: Skilled individuals assigned roles
+- **Natural Leadership**: Charismatic NPCs attract followers
+- **Expertise**: Those with specialized knowledge guide others
+
+## The Living World Principles
+
+1. **Autonomous Action**: NPCs act based on their needs, skills, and personalities
+2. **Skill Development**: All actions contribute to skill advancement
+3. **Collaborative Achievement**: Complex goals require teamwork
+4. **Knowledge Sharing**: Information spreads through books and teaching
+5. **Environmental Adaptation**: NPCs respond to changing conditions
+6. **Creative Expression**: Art, literature, and music emerge naturally
+7. **Technological Progress**: Innovation drives improvement and discovery
+
+## Language and Communication
+
+The Common Tongue serves as the foundation for all interaction. NPCs with machine learning capabilities serve as teachers, helping others master:
+- **Basic Vocabulary**: Essential words for daily life
+- **Technical Terms**: Specialized language for skills and crafts
+- **Cultural Expressions**: Racial traditions and customs
+- **Abstract Concepts**: Philosophy, art, and complex ideas
+
+Through this shared language, knowledge flows freely, allowing the world to evolve and grow in unexpected ways.

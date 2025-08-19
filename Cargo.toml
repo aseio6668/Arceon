@@ -1,0 +1,191 @@
+[package]
+name = "arceon"
+version = "0.1.0"
+edition = "2021"
+description = "A decentralized text-based MMORPG with GUI and blockchain integration"
+authors = ["Arceon Development Team"]
+license = "MIT"
+
+[[bin]]
+name = "arceon"
+path = "src/main.rs"
+
+[[bin]]
+name = "arceon-terminal"
+path = "src/main_terminal.rs"
+
+# AI demo temporarily disabled due to trait compatibility issues
+# [[bin]]
+# name = "arceon-ai-demo"
+# path = "src/ai_demo.rs"
+
+[[bin]]
+name = "arceon-genesis-demo"
+path = "src/genesis_demo.rs"
+
+[[bin]]
+name = "arceon-being-demo"
+path = "src/being_demo.rs"
+
+[[bin]]
+name = "arceon-standalone-being-demo"
+path = "src/standalone_being_demo.rs"
+
+[[bin]]
+name = "arceon-test"
+path = "src/test_gameplay.rs"
+
+[[bin]]
+name = "arceon-server"
+path = "src/server.rs"
+
+[[bin]]
+name = "arceon-contribution"
+path = "src/contribution.rs"
+
+# Examples should be in examples/ directory only, not as bins
+
+[workspace]
+members = [
+    "arceon-core",
+    "arceon-gui",
+    "arceon-network",
+    "arceon-blockchain",
+    "arceon-world",
+    "arceon-ai",
+    "arceon-economy",
+    "arceon-crypto",
+    "arceon-crafting",
+    "arceon-governance",
+    "arceon-world-systems",
+    "arceon-dimensions",
+    "arceon-progression",
+    "arceon-social",
+    "arceon-pvp",
+    "arceon-quests",
+    "arceon-performance",
+    "arceon-testing",
+    "arceon-advanced-ai",
+    "arceon-graphics",
+    "arceon-mobile",
+    "arceon-advanced-networking",
+    "arceon-deployment",
+    "arceon-platform-integration"
+]
+
+[workspace.dependencies]
+# Core dependencies
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+rand = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+num_cpus = "1.0"
+
+# GUI Framework (egui for cross-platform)
+eframe = { version = "0.28", features = ["glow"] }
+egui = "0.28"
+egui_extras = "0.28"
+
+# Networking
+libp2p = { version = "0.53", features = ["gossipsub", "mdns", "identify", "tcp", "yamux", "noise", "tokio", "macros"] }
+quinn = "0.10"
+reqwest = { version = "0.11", features = ["json"] }
+warp = "0.3"
+
+# Blockchain & Crypto
+ed25519-dalek = "2.0"
+sha2 = "0.10"
+blake3 = "1.5"
+secp256k1 = "0.28"
+
+# Database
+sled = "0.34"
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite"] }
+
+# Game Engine
+bevy_ecs = "0.12"
+
+# AI/ML - Using compatible versions with rand 0.8
+candle-core = "0.2"
+candle-nn = "0.2"
+
+# Configuration
+config = "0.13"
+clap = { version = "4.0", features = ["derive"] }
+
+# Graph structures
+petgraph = "0.6"
+
+# Workspace member dependencies
+arceon-core = { path = "arceon-core" }
+arceon-gui = { path = "arceon-gui" }
+arceon-network = { path = "arceon-network" }
+arceon-blockchain = { path = "arceon-blockchain" }
+arceon-world = { path = "arceon-world" }
+arceon-ai = { path = "arceon-ai" }
+arceon-economy = { path = "arceon-economy" }
+arceon-crypto = { path = "arceon-crypto" }
+arceon-crafting = { path = "arceon-crafting" }
+arceon-governance = { path = "arceon-governance" }
+arceon-world-systems = { path = "arceon-world-systems" }
+arceon-dimensions = { path = "arceon-dimensions" }
+arceon-progression = { path = "arceon-progression" }
+arceon-social = { path = "arceon-social" }
+arceon-pvp = { path = "arceon-pvp" }
+arceon-quests = { path = "arceon-quests" }
+arceon-performance = { path = "arceon-performance" }
+arceon-testing = { path = "arceon-testing" }
+arceon-advanced-ai = { path = "arceon-advanced-ai" }
+arceon-graphics = { path = "arceon-graphics" }
+arceon-mobile = { path = "arceon-mobile" }
+arceon-advanced-networking = { path = "arceon-advanced-networking" }
+arceon-deployment = { path = "arceon-deployment" }
+arceon-platform-integration = { path = "arceon-platform-integration" }
+
+[dependencies]
+arceon-core = { path = "arceon-core" }
+arceon-gui = { path = "arceon-gui" }
+arceon-network = { path = "arceon-network" }
+arceon-blockchain = { path = "arceon-blockchain" }
+arceon-world = { path = "arceon-world" }
+arceon-ai = { path = "arceon-ai" }
+arceon-economy = { path = "arceon-economy" }
+arceon-crypto = { path = "arceon-crypto" }
+arceon-crafting = { path = "arceon-crafting" }
+arceon-governance = { path = "arceon-governance" }
+arceon-world-systems = { path = "arceon-world-systems" }
+arceon-dimensions = { path = "arceon-dimensions" }
+arceon-progression = { path = "arceon-progression" }
+arceon-social = { path = "arceon-social" }
+arceon-pvp = { path = "arceon-pvp" }
+arceon-quests = { path = "arceon-quests" }
+arceon-performance = { path = "arceon-performance" }
+arceon-testing = { path = "arceon-testing" }
+arceon-advanced-ai = { path = "arceon-advanced-ai" }
+arceon-graphics = { path = "arceon-graphics" }
+arceon-mobile = { path = "arceon-mobile" }
+arceon-advanced-networking = { path = "arceon-advanced-networking" }
+arceon-deployment = { path = "arceon-deployment" }
+arceon-platform-integration = { path = "arceon-platform-integration" }
+
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+config = { workspace = true }
+uuid = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+num_cpus = { workspace = true }
+warp = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }

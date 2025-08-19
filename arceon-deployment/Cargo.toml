@@ -1,0 +1,54 @@
+[package]
+name = "arceon-deployment"
+version = "0.1.0"
+edition = "2021"
+description = "Production deployment infrastructure for Arceon MMORPG"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+
+# Core dependencies
+# arceon-core = { path = "../arceon-core" }
+# arceon-network = { path = "../arceon-network" }
+# arceon-advanced-networking = { path = "../arceon-advanced-networking" }
+
+# Monitoring and observability
+prometheus = "0.13"
+metrics = "0.21"
+
+# Database management
+sqlx = { workspace = true, features = ["sqlite", "runtime-tokio-rustls"] }
+
+# Security and TLS
+rustls = "0.21"
+rustls-pemfile = "1.0"
+
+# Configuration management
+config = { workspace = true }
+clap = { workspace = true }
+
+# Container and deployment
+docker-api = "0.14"
+
+# Health checking
+redis = { version = "0.24", features = ["tokio-comp"] }
+
+# Backup and compression
+tar = "0.4"
+flate2 = "1.0"
+
+# System and process management
+sysinfo = "0.29"
+
+# HTTP client for API calls
+reqwest = { workspace = true }
+
+# Async traits
+async-trait = "0.1"

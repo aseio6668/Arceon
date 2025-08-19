@@ -1,0 +1,60 @@
+[package]
+name = "arceon-mobile"
+version = "0.1.0"
+edition = "2021"
+description = "Mobile and cross-platform support for Arceon MMORPG"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }
+arceon-core = { path = "../arceon-core" }
+arceon-graphics = { path = "../arceon-graphics" }
+arceon-network = { path = "../arceon-network" }
+
+# Platform detection
+cfg-if = "1.0"
+
+# Storage and persistence
+directories = "5.0"
+
+# HTTP client for web requests
+reqwest = { workspace = true }
+
+# Mobile UI frameworks
+egui = { workspace = true }
+
+# Math libraries
+glam = "0.24"
+
+# Web Assembly support (conditional)
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+web-sys = "0.3"
+js-sys = "0.3"
+wasm-bindgen-futures = "0.4"
+console_error_panic_hook = "0.1"
+getrandom = { version = "0.2", features = ["js"] }
+
+# Mobile-specific features
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.13"
+jni = "0.21"
+ndk = "0.7"
+ndk-glue = "0.7"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc = "0.2"
+cocoa = "0.24"
+core-foundation = "0.9"
+
+[features]
+default = []
+desktop = []
+mobile = []
+web = []
+android = ["mobile"]
+ios = ["mobile"]

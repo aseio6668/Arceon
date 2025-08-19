@@ -1,0 +1,16 @@
+[package]
+name = "arceon-network"
+version = "0.1.0"
+edition = "2021"
+description = "Decentralized networking for Arceon"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+libp2p = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+arceon-core = { path = "../arceon-core" }
+arceon-blockchain = { path = "../arceon-blockchain" }

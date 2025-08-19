@@ -1,0 +1,55 @@
+[package]
+name = "arceon-advanced-networking"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced networking systems for Arceon MMORPG - Global server mesh and CDN integration"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+
+# Core dependencies
+# arceon-core = { path = "../arceon-core" }
+# arceon-network = { path = "../arceon-network" }
+
+# Advanced networking
+quinn = { workspace = true }
+libp2p = { workspace = true }
+reqwest = { workspace = true }
+
+# Distributed systems
+redis = { version = "0.24", features = ["tokio-comp"] }
+
+# Load balancing and service discovery
+tower = "0.4"
+
+# Metrics and monitoring
+prometheus = "0.13"
+metrics = "0.21"
+
+# Database for global state
+sqlx = { workspace = true, features = ["sqlite", "runtime-tokio-rustls"] }
+
+# Network protocols
+http = "1.0"
+hyper = { version = "1.0", features = ["full"] }
+
+# Compression for network optimization
+lz4_flex = "0.11"
+zstd = "0.13"
+
+# TLS and security
+rustls = "0.21"
+rustls-pemfile = "1.0"
+
+# Async trait
+async-trait = "0.1"
+
+# Configuration
+config = { workspace = true }

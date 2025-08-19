@@ -1,0 +1,19 @@
+[package]
+name = "arceon-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core game logic and systems for Arceon"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+bevy_ecs = { workspace = true }
+sled = { workspace = true }
+config = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }

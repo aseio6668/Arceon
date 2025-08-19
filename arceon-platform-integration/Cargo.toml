@@ -1,0 +1,71 @@
+[package]
+name = "arceon-platform-integration"
+version = "0.1.0"
+edition = "2021"
+description = "Platform integration system for Epic Games, Steam, and third-party services"
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+reqwest = { workspace = true, features = ["json"] }
+
+# Arceon modules
+arceon-core = { workspace = true }
+arceon-network = { workspace = true }
+arceon-crypto = { workspace = true }
+
+# Platform Integration
+steamworks = { version = "0.11", optional = true }
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_System_Registry",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_Security",
+    "Win32_System_Com",
+    "Win32_System_Threading",
+    "Win32_Storage_FileSystem"
+], optional = true }
+
+# HTTP client for platform APIs
+url = "2.5"
+base64 = "0.22"
+
+# Async utilities
+futures = "0.3"
+async-trait = "0.1"
+
+# Configuration and CLI
+clap = { workspace = true }
+config = { workspace = true }
+
+# JSON Web Tokens for authentication
+jsonwebtoken = "9.2"
+
+# Windows registry access
+winreg = { version = "0.52", optional = true }
+
+# Directory utilities
+directories = "5.0"
+
+# Cryptographic utilities
+rand = "0.8"
+sha2 = "0.10"
+
+# System utilities
+num_cpus = "1.16"
+urlencoding = "2.1"
+dirs = "5.0"
+
+[features]
+default = ["steam-integration", "epic-integration", "windows-launcher"]
+steam-integration = ["steamworks"]
+epic-integration = []
+windows-launcher = ["windows", "winreg"]
+full-integration = ["steam-integration", "epic-integration", "windows-launcher"]

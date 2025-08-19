@@ -1,0 +1,58 @@
+[package]
+name = "arceon-advanced-ai"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced AI systems for Arceon MMORPG including sophisticated NPC AI, machine learning, and intelligent game systems"
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+
+# Arceon modules
+arceon-core = { workspace = true }
+arceon-world = { workspace = true }
+arceon-quests = { workspace = true }
+
+# Machine Learning and AI
+candle-core = { workspace = true, optional = true }
+candle-nn = { workspace = true, optional = true }
+candle-datasets = { version = "0.2", optional = true }
+candle-transformers = { version = "0.2", optional = true }
+
+# Neural Networks and Deep Learning
+# tch = { version = "0.13", optional = true }  # Conflicts with arceon-ai, disabled for now
+ort = { version = "1.16", features = ["download-binaries"], optional = true }
+
+# Behavior Trees and State Machines
+# big-brain = "0.19"  # Removed - not compatible
+
+# Natural Language Processing
+tokenizers = "0.15"
+hf-hub = "0.3"
+
+# Graph algorithms for AI pathfinding
+petgraph = { workspace = true }
+
+# Statistics and probability
+statrs = "0.16"
+ndarray = "0.15"
+
+# A* pathfinding
+pathfinding = "4.6"
+
+# Async utilities
+futures = "0.3"
+
+[features]
+default = []
+ml-full = ["ort", "candle-transformers", "candle-core", "candle-nn", "candle-datasets"]
+# pytorch-integration = ["tch"]  # Disabled due to version conflicts
+gpu-acceleration = []

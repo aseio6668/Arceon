@@ -1,0 +1,24 @@
+[package]
+name = "arceon-social"
+version = "0.1.0"
+edition = "2021"
+description = "Social systems for Arceon MMORPG including guilds, friendships, and community features"
+
+[dependencies]
+# Core dependencies from workspace
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+
+# Local dependencies
+arceon-core = { path = "../arceon-core" }
+arceon-progression = { path = "../arceon-progression" }
+
+# Additional dependencies for social systems
+sqlx = { workspace = true }

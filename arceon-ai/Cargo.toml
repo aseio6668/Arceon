@@ -1,0 +1,32 @@
+[package]
+name = "arceon-ai"
+version = "0.1.0"
+edition = "2021"
+description = "AI systems for NPCs in Arceon"
+
+[dependencies]
+arceon-core = { path = "../arceon-core" }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+rand = "0.8"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Machine Learning Dependencies
+tch = { version = "0.12", optional = true }  # PyTorch bindings for Rust
+candle-core = { version = "0.3", optional = true }  # Native Rust ML framework
+candle-nn = { version = "0.3", optional = true }
+tokenizers = { version = "0.14", optional = true }
+hf-hub = { version = "0.3", optional = true }
+
+# Text processing
+regex = "1.0"
+unicode-segmentation = "1.10"
+
+[features]
+default = []
+ml-torch = ["tch"]
+ml-candle = ["candle-core", "candle-nn", "tokenizers", "hf-hub"]

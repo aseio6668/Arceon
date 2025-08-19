@@ -1,0 +1,14 @@
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    "-C", "link-arg=/STACK:33554432",  # 32MB stack
+    "-C", "link-arg=/HEAP:268435456",  # 256MB heap
+    "-C", "link-arg=/LARGEADDRESSAWARE"
+]
+
+[build]
+# Reduce build parallelism to reduce memory pressure
+jobs = 1
+
+[env]
+# Reduce memory usage during compilation
+CARGO_INCREMENTAL = "0"

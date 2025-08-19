@@ -276,7 +276,7 @@ impl MobilePerformanceManager {
             device_tier: device_tier.clone(),
             recommended_settings,
             capabilities,
-            limitations,
+            limitations: limitations.clone(),
         };
 
         let metrics_collector = Arc::new(RwLock::new(MetricsCollector::new()));
@@ -417,7 +417,7 @@ impl MobilePerformanceManager {
             info!("💾 Memory pressure changed: {:?} -> {:?}", 
                   self.memory_manager.memory_pressure, pressure);
             
-            self.memory_manager.memory_pressure = pressure;
+            self.memory_manager.memory_pressure = pressure.clone();
             
             match pressure {
                 MemoryPressure::Warning => {

@@ -450,7 +450,7 @@ pub struct ViolationRecord {
     pub appeal_status: Option<AppealStatus>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum ViolationType {
     Aimbot,
     Wallhack,
@@ -1080,7 +1080,7 @@ impl AntiCheatSystem {
 
         // Update baseline if enough data
         if let Some(performance_stats) = performance_stats {
-            self.update_behavioral_baseline(&mut profile.behavioral_baseline, &performance_stats);
+            Self::update_behavioral_baseline_static(&mut profile.behavioral_baseline, &performance_stats);
         }
 
         if suspicious_count > 3 {
@@ -1096,8 +1096,8 @@ impl AntiCheatSystem {
     }
 
     /// Update behavioral baseline with new data
-    fn update_behavioral_baseline(&self, _baseline: &mut BehavioralBaseline, 
-                                 _performance: &PerformanceProfile) {
+    fn update_behavioral_baseline_static(_baseline: &mut BehavioralBaseline, 
+                                        _performance: &PerformanceProfile) {
         // In real implementation, would update baseline with weighted average
         // of historical data and new observations
     }

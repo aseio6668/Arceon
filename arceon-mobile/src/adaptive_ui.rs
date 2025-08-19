@@ -228,7 +228,7 @@ impl AdaptiveUIManager {
 
         let screen_config = Self::create_screen_configuration(platform_info).await?;
         let layout_type = Self::determine_layout_type(&screen_config, platform_info);
-        let current_layout = Self::create_layout_for_type(layout_type, &screen_config);
+        let current_layout = Self::create_layout_for_type(layout_type.clone(), &screen_config);
         let accessibility_settings = Self::detect_accessibility_settings(platform_info).await?;
         let responsive_breakpoints = Self::create_responsive_breakpoints();
         

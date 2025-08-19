@@ -668,33 +668,43 @@ impl ArenaManager {
 
     /// Add player to existing match
     pub fn add_player_to_match(&mut self, match_id: MatchId, player_id: PlayerId) -> Result<()> {
-        let pvp_match = self.active_matches.get_mut(&match_id)
-            .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
+        // First check capacity and duplicates without holding mutable borrow
+        let (arena_capacity, current_participants, already_in_match) = {
+            let pvp_match = self.active_matches.get(&match_id)
+                .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
+            
+            let already_in_match = pvp_match.participants.iter().any(|p| p.player_id == player_id);
+            
+            let arena_id = pvp_match.arena_id
+                .ok_or_else(|| anyhow::anyhow!("Match has no assigned arena"))?;
+            let arena = self.arenas.get(&arena_id)
+                .ok_or_else(|| anyhow::anyhow!("Arena not found"))?;
+            
+            (arena.capacity.max_players as usize, pvp_match.participants.len(), already_in_match)
+        };
 
-        // Check if player is already in match
-        if pvp_match.participants.iter().any(|p| p.player_id == player_id) {
+        if already_in_match {
             return Err(anyhow::anyhow!("Player already in match"));
         }
 
-        // Check capacity
-        let arena_id = pvp_match.arena_id
-            .ok_or_else(|| anyhow::anyhow!("Match has no assigned arena"))?;
-        let arena = self.arenas.get(&arena_id)
-            .ok_or_else(|| anyhow::anyhow!("Arena not found"))?;
-
-        if pvp_match.participants.len() >= arena.capacity.max_players as usize {
+        if current_participants >= arena_capacity {
             return Err(anyhow::anyhow!("Match at capacity"));
         }
+
+        // Assign team first
+        let team_id = self.assign_team(match_id, player_id)?;
 
         // Add participant
         let participant = crate::MatchParticipant {
             player_id,
-            team_id: self.assign_team(match_id, player_id)?,
+            team_id,
             ready_status: false,
             connection_status: crate::ConnectionStatus::Connected,
             performance: crate::ParticipantPerformance::default(),
         };
 
+        let pvp_match = self.active_matches.get_mut(&match_id)
+            .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
         pvp_match.participants.push(participant);
         Ok(())
     }
@@ -718,10 +728,12 @@ impl ArenaManager {
         } else {
             // Create new team if none exist
             let team_id = Uuid::new_v4();
+            let team_count = pvp_match.teams.len();
+            let team_color = Self::get_team_color_static(team_count);
             let team = crate::Team {
                 team_id,
-                name: format!("Team {}", pvp_match.teams.len() + 1),
-                color: self.get_team_color(pvp_match.teams.len()),
+                name: format!("Team {}", team_count + 1),
+                color: team_color,
                 members: vec![player_id],
                 captain: Some(player_id),
                 team_rating: 1000, // Default rating
@@ -735,7 +747,7 @@ impl ArenaManager {
     }
 
     /// Get team color based on team index
-    fn get_team_color(&self, team_index: usize) -> String {
+    fn get_team_color_static(team_index: usize) -> String {
         let colors = ["#FF0000", "#0000FF", "#00FF00", "#FFFF00", "#FF00FF", "#00FFFF"];
         colors.get(team_index % colors.len())
             .unwrap_or(&"#808080")
@@ -783,22 +795,31 @@ impl ArenaManager {
 
     /// Start match
     pub fn start_match(&mut self, match_id: MatchId) -> Result<()> {
+        // First get arena info without holding mutable borrow
+        let (arena_id, participant_count) = {
+            let pvp_match = self.active_matches.get(&match_id)
+                .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
+            (pvp_match.arena_id, pvp_match.participants.len())
+        };
+
+        // Update match status
         let pvp_match = self.active_matches.get_mut(&match_id)
             .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
-
         pvp_match.status = crate::MatchStatus::InProgress;
         pvp_match.start_time = Some(Utc::now());
 
         // Initialize power-up spawns if arena supports them
-        if let Some(arena_id) = pvp_match.arena_id {
-            if let Some(arena) = self.arenas.get_mut(&arena_id) {
-                if arena.settings.power_ups_enabled {
-                    self.initialize_power_ups(&arena_id)?;
-                }
+        if let Some(arena_id) = arena_id {
+            let power_ups_enabled = self.arenas.get(&arena_id)
+                .map(|arena| arena.settings.power_ups_enabled)
+                .unwrap_or(false);
+            
+            if power_ups_enabled {
+                self.initialize_power_ups(&arena_id)?;
             }
         }
 
-        tracing::info!("Started match {} with {} participants", match_id, pvp_match.participants.len());
+        tracing::info!("Started match {} with {} participants", match_id, participant_count);
         Ok(())
     }
 
@@ -830,17 +851,23 @@ impl ArenaManager {
         let pvp_match = self.active_matches.get_mut(&match_id)
             .ok_or_else(|| anyhow::anyhow!("Match not found"))?;
 
+        // Clone event data before moving
+        let attacker_id = event.attacker_id;
+        let target_id = event.target_id;
+        let event_type = event.event_type.clone();
+        let damage_amount = event.damage_amount;
+
         pvp_match.match_data.combat_log.push(event);
 
         // Update participant performance based on event
-        if let Some(attacker_id) = event.attacker_id {
+        if let Some(attacker_id) = attacker_id {
             if let Some(participant) = pvp_match.participants.iter_mut()
                 .find(|p| p.player_id == attacker_id) {
                 
-                match event.event_type {
+                match event_type {
                     crate::CombatEventType::Kill => participant.performance.kills += 1,
                     crate::CombatEventType::Attack => {
-                        if let Some(damage) = event.damage_amount {
+                        if let Some(damage) = damage_amount {
                             participant.performance.damage_dealt += damage;
                         }
                     },
@@ -849,14 +876,14 @@ impl ArenaManager {
             }
         }
 
-        if let Some(target_id) = event.target_id {
+        if let Some(target_id) = target_id {
             if let Some(participant) = pvp_match.participants.iter_mut()
                 .find(|p| p.player_id == target_id) {
                 
-                match event.event_type {
+                match event_type {
                     crate::CombatEventType::Death => participant.performance.deaths += 1,
                     crate::CombatEventType::Attack => {
-                        if let Some(damage) = event.damage_amount {
+                        if let Some(damage) = damage_amount {
                             participant.performance.damage_taken += damage;
                         }
                     },

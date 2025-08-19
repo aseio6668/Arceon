@@ -594,7 +594,7 @@ pub struct FeedbackChannel {
     pub data_quality_metrics: DataQualityMetrics,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum ChannelType {
     InGameSurvey,
     PostMatchFeedback,

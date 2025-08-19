@@ -289,7 +289,7 @@ impl CloudSyncManager {
 
         // Queue for upload
         let mut state = self.sync_state.write().await;
-        state.pending_uploads.push(sync_item);
+        state.pending_uploads.push(sync_item.clone());
         
         // Sort by priority
         state.pending_uploads.sort_by(|a, b| b.priority.cmp(&a.priority));
@@ -606,7 +606,7 @@ impl CloudSyncManager {
         Ok(local.to_vec())
     }
 
-    async fn merge_progress_data(&self, local: &[u8], cloud: &[u8]) -> Result<Vec<u8>> {
+    async fn merge_progress_data(&self, local: &[u8], _cloud: &[u8]) -> Result<Vec<u8>> {
         // For progress data, take the maximum values
         // This is a simplified implementation
         Ok(local.to_vec()) // Fallback to local for now

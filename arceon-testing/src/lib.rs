@@ -291,7 +291,7 @@ pub struct TestResult {
     pub artifacts: Vec<TestArtifact>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum TestStatus {
     Passed,
     Failed,
@@ -475,10 +475,12 @@ impl TestingFramework {
         self.setup_test_environment().await?;
 
         // Execute test suites
-        for (suite_name, suite) in &self.test_suites {
+        let suite_names: Vec<String> = self.test_suites.keys().cloned().collect();
+        for suite_name in suite_names {
             execution.current_test = Some(suite_name.clone());
             
-            let suite_results = self.execute_test_suite(suite).await?;
+            let suite = self.test_suites.get(&suite_name).unwrap().clone();
+            let suite_results = self.execute_test_suite(&suite).await?;
             
             // Update execution statistics
             for result in suite_results {

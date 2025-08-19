@@ -4,9 +4,20 @@ use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 use tracing::{info, warn, debug, error};
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen_futures::JsFuture;
+#[cfg(target_arch = "wasm32")]
 use web_sys::{window, Document, Element, HtmlElement, Storage, console};
+
+// Type aliases for non-wasm platforms
+#[cfg(not(target_arch = "wasm32"))]
+type Document = ();
+#[cfg(not(target_arch = "wasm32"))]
+type HtmlElement = ();
+#[cfg(not(target_arch = "wasm32"))]
+type Storage = ();
 
 /// Web platform integration manager for browser-based gameplay
 pub struct WebIntegration {
@@ -195,18 +206,26 @@ impl WebIntegration {
     pub async fn initialize_canvas(&mut self, canvas_id: &str) -> Result<()> {
         let document = &self.dom_manager.document;
         
-        if let Some(canvas) = document.get_element_by_id(canvas_id) {
-            let canvas_element = canvas.dyn_into::<HtmlElement>()
-                .map_err(|_| anyhow::anyhow!("Canvas element is not an HtmlElement"))?;
-            
-            // Set up canvas properties
-            self.setup_canvas_properties(&canvas_element).await?;
-            
-            self.dom_manager.canvas_element = Some(canvas_element);
-            
-            info!("🖼️ Canvas initialized: {}", canvas_id);
-        } else {
-            return Err(anyhow::anyhow!("Canvas element '{}' not found", canvas_id));
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(canvas) = document.get_element_by_id(canvas_id) {
+                let canvas_element = canvas.dyn_into::<HtmlElement>()
+                    .map_err(|_| anyhow::anyhow!("Canvas element is not an HtmlElement"))?;
+                
+                // Set up canvas properties
+                self.setup_canvas_properties(&canvas_element).await?;
+                
+                self.dom_manager.canvas_element = Some(canvas_element);
+                
+                info!("🖼️ Canvas initialized: {}", canvas_id);
+            } else {
+                return Err(anyhow::anyhow!("Canvas element '{}' not found", canvas_id));
+            }
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            info!("🖼️ Would initialize canvas: {}", canvas_id);
         }
 
         Ok(())
@@ -220,7 +239,9 @@ impl WebIntegration {
 
         if let Some(canvas) = &self.dom_manager.canvas_element {
             // Request fullscreen on canvas element
-            if let Some(window) = window() {
+            #[cfg(target_arch = "wasm32")]
+            #[cfg(target_arch = "wasm32")]
+        if let Some(window) = window() {
                 let document = window.document().unwrap();
                 
                 // This would use the Fullscreen API
@@ -238,6 +259,7 @@ impl WebIntegration {
             return Ok(());
         }
 
+        #[cfg(target_arch = "wasm32")]
         if let Some(window) = window() {
             let document = window.document().unwrap();
             
@@ -251,17 +273,25 @@ impl WebIntegration {
 
     /// Show loading overlay
     pub fn show_loading(&mut self, message: &str) -> Result<()> {
-        if let Some(overlay) = &self.dom_manager.loading_overlay {
-            overlay.set_inner_html(&format!(
-                r#"
-                <div class="loading-spinner"></div>
-                <div class="loading-message">{}</div>
-                "#,
-                message
-            ));
-            
-            overlay.style().set_property("display", "flex")?;
-            debug!("⏳ Showing loading: {}", message);
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(overlay) = &self.dom_manager.loading_overlay {
+                overlay.set_inner_html(&format!(
+                    r#"
+                    <div class="loading-spinner"></div>
+                    <div class="loading-message">{}</div>
+                    "#,
+                    message
+                ));
+                
+                overlay.style().set_property("display", "flex")?;
+                debug!("⏳ Showing loading: {}", message);
+            }
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            debug!("⏳ Would show loading: {}", message);
         }
 
         Ok(())
@@ -269,9 +299,17 @@ impl WebIntegration {
 
     /// Hide loading overlay
     pub fn hide_loading(&mut self) -> Result<()> {
-        if let Some(overlay) = &self.dom_manager.loading_overlay {
-            overlay.style().set_property("display", "none")?;
-            debug!("✅ Loading hidden");
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(overlay) = &self.dom_manager.loading_overlay {
+                overlay.style().set_property("display", "none")?;
+                debug!("✅ Loading hidden");
+            }
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            debug!("✅ Would hide loading");
         }
 
         Ok(())
@@ -279,18 +317,26 @@ impl WebIntegration {
 
     /// Show error message
     pub fn show_error(&mut self, error: &str) -> Result<()> {
-        if let Some(container) = &self.dom_manager.error_container {
-            container.set_inner_html(&format!(
-                r#"
-                <div class="error-icon">⚠️</div>
-                <div class="error-message">{}</div>
-                <button onclick="this.parentElement.style.display='none'">Dismiss</button>
-                "#,
-                error
-            ));
-            
-            container.style().set_property("display", "block")?;
-            error!("❌ Showing error: {}", error);
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(container) = &self.dom_manager.error_container {
+                container.set_inner_html(&format!(
+                    r#"
+                    <div class="error-icon">⚠️</div>
+                    <div class="error-message">{}</div>
+                    <button onclick="this.parentElement.style.display='none'">Dismiss</button>
+                    "#,
+                    error
+                ));
+                
+                container.style().set_property("display", "block")?;
+                tracing::error!("❌ Showing error: {}", error);
+            }
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            tracing::error!("❌ Error: {}", error);
         }
 
         Ok(())
@@ -304,11 +350,19 @@ impl WebIntegration {
             &self.storage_manager.session_storage
         };
 
-        if let Some(storage) = storage {
-            storage.set_item(key, data)
-                .map_err(|_| anyhow::anyhow!("Failed to store data"))?;
-            
-            debug!("💾 Stored data: {} ({} storage)", key, if persistent { "local" } else { "session" });
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(storage) = storage {
+                storage.set_item(key, data)
+                    .map_err(|_| anyhow::anyhow!("Failed to store data"))?;
+                
+                debug!("💾 Stored data: {} ({} storage)", key, if persistent { "local" } else { "session" });
+            }
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            debug!("💾 Would store data: {} ({} storage)", key, if persistent { "local" } else { "session" });
         }
 
         Ok(())
@@ -322,16 +376,25 @@ impl WebIntegration {
             &self.storage_manager.session_storage
         };
 
-        if let Some(storage) = storage {
-            let data = storage.get_item(key)
-                .map_err(|_| anyhow::anyhow!("Failed to retrieve data"))?;
-            
-            if data.is_some() {
-                debug!("📖 Retrieved data: {} ({} storage)", key, if persistent { "local" } else { "session" });
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Some(storage) = storage {
+                let data = storage.get_item(key)
+                    .map_err(|_| anyhow::anyhow!("Failed to retrieve data"))?;
+                
+                if data.is_some() {
+                    debug!("📖 Retrieved data: {} ({} storage)", key, if persistent { "local" } else { "session" });
+                }
+                
+                Ok(data)
+            } else {
+                Ok(None)
             }
-            
-            Ok(data)
-        } else {
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            debug!("📖 Would retrieve data: {} ({} storage)", key, if persistent { "local" } else { "session" });
             Ok(None)
         }
     }
@@ -416,64 +479,80 @@ impl WebIntegration {
 
     /// Get browser performance info
     pub async fn get_performance_info(&self) -> Result<WebPerformanceInfo> {
-        let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+        #[cfg(target_arch = "wasm32")]
+        {
+            let _window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+            
+            // This would use the Performance API
+            Ok(WebPerformanceInfo {
+                memory_used: 0, // Would get from performance.memory if available
+                memory_limit: 0,
+                connection_type: "unknown".to_string(),
+                connection_downlink: 0.0,
+                connection_effective_type: "4g".to_string(),
+                is_low_end_device: false,
+            })
+        }
         
-        // This would use the Performance API
-        Ok(WebPerformanceInfo {
-            memory_used: 0, // Would get from performance.memory if available
-            memory_limit: 0,
-            connection_type: "unknown".to_string(),
-            connection_downlink: 0.0,
-            connection_effective_type: "4g".to_string(),
-            is_low_end_device: false,
-        })
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            Err(anyhow::anyhow!("Web performance info not available on non-web platforms"))
+        }
     }
 
     // Private helper methods
     async fn detect_browser_info() -> Result<BrowserInfo> {
-        let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
-        let navigator = window.navigator();
-        
-        let user_agent = navigator.user_agent()?;
-        let browser_type = Self::parse_browser_type(&user_agent);
-        
-        // Detect various capabilities
-        let supports_webgl2 = Self::check_webgl2_support(&window);
-        let supports_webassembly = Self::check_wasm_support();
-        let supports_web_workers = Self::check_web_workers_support();
-        let supports_service_workers = Self::check_service_workers_support(&navigator);
-        let supports_webrtc = Self::check_webrtc_support(&window);
-        let supports_web_audio = Self::check_web_audio_support(&window);
-        let supports_gamepad = Self::check_gamepad_support(&navigator);
-        let supports_fullscreen = Self::check_fullscreen_support(&window);
-        let supports_pointer_lock = Self::check_pointer_lock_support();
-        
-        let screen = window.screen()?;
-        let screen_info = WebScreenInfo {
-            screen_width: screen.width()? as u32,
-            screen_height: screen.height()? as u32,
-            available_width: screen.avail_width()? as u32,
-            available_height: screen.avail_height()? as u32,
-            pixel_ratio: window.device_pixel_ratio(),
-            color_depth: screen.color_depth()? as u32,
-        };
+        #[cfg(target_arch = "wasm32")]
+        {
+            let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+            let navigator = window.navigator();
+            
+            let user_agent = navigator.user_agent()?;
+            let browser_type = Self::parse_browser_type(&user_agent);
+            
+            // Detect various capabilities
+            let supports_webgl2 = Self::check_webgl2_support(&window);
+            let supports_webassembly = Self::check_wasm_support();
+            let supports_web_workers = Self::check_web_workers_support();
+            let supports_service_workers = Self::check_service_workers_support(&navigator);
+            let supports_webrtc = Self::check_webrtc_support(&window);
+            let supports_web_audio = Self::check_web_audio_support(&window);
+            let supports_gamepad = Self::check_gamepad_support(&navigator);
+            let supports_fullscreen = Self::check_fullscreen_support(&window);
+            let supports_pointer_lock = Self::check_pointer_lock_support();
+            
+            let screen = window.screen()?;
+            let screen_info = WebScreenInfo {
+                screen_width: screen.width()? as u32,
+                screen_height: screen.height()? as u32,
+                available_width: screen.avail_width()? as u32,
+                available_height: screen.avail_height()? as u32,
+                pixel_ratio: window.device_pixel_ratio(),
+                color_depth: screen.color_depth()? as u32,
+            };
 
-        Ok(BrowserInfo {
-            user_agent: user_agent.clone(),
-            browser_type,
-            version: Self::parse_browser_version(&user_agent),
-            supports_webgl2,
-            supports_webassembly,
-            supports_web_workers,
-            supports_service_workers,
-            supports_webrtc,
-            supports_web_audio,
-            supports_gamepad,
-            supports_fullscreen,
-            supports_pointer_lock,
-            is_mobile_browser: Self::is_mobile_browser(&user_agent),
-            screen_info,
-        })
+            Ok(BrowserInfo {
+                user_agent: user_agent.clone(),
+                browser_type,
+                version: Self::parse_browser_version(&user_agent),
+                supports_webgl2,
+                supports_webassembly,
+                supports_web_workers,
+                supports_service_workers,
+                supports_webrtc,
+                supports_web_audio,
+                supports_gamepad,
+                supports_fullscreen,
+                supports_pointer_lock,
+                is_mobile_browser: Self::is_mobile_browser(&user_agent),
+                screen_info,
+            })
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            Err(anyhow::anyhow!("Browser detection not available on non-web platforms"))
+        }
     }
 
     fn parse_browser_type(user_agent: &str) -> BrowserType {
@@ -504,44 +583,80 @@ impl WebIntegration {
         user_agent.contains("iPad")
     }
 
+    #[cfg(target_arch = "wasm32")]
     fn check_webgl2_support(window: &web_sys::Window) -> bool {
         // Check for WebGL2 support
         true // Simplified
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_webgl2_support(_window: &()) -> bool {
+        false // Not available on non-web platforms
+    }
+
     fn check_wasm_support() -> bool {
         // Check for WebAssembly support
-        true // Most modern browsers support it
+        cfg!(target_arch = "wasm32")
     }
 
     fn check_web_workers_support() -> bool {
         // Check for Web Workers support
-        true // Widely supported
+        cfg!(target_arch = "wasm32")
     }
 
+    #[cfg(target_arch = "wasm32")]
     fn check_service_workers_support(navigator: &web_sys::Navigator) -> bool {
         // Check for Service Workers support
         true // Simplified
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_service_workers_support(_navigator: &()) -> bool {
+        false
+    }
+
+    #[cfg(target_arch = "wasm32")]
     fn check_webrtc_support(window: &web_sys::Window) -> bool {
         // Check for WebRTC support
         true // Simplified
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_webrtc_support(_window: &()) -> bool {
+        false
+    }
+
+    #[cfg(target_arch = "wasm32")]
     fn check_web_audio_support(window: &web_sys::Window) -> bool {
         // Check for Web Audio API support
         true // Simplified
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_web_audio_support(_window: &()) -> bool {
+        false
+    }
+
+    #[cfg(target_arch = "wasm32")]
     fn check_gamepad_support(navigator: &web_sys::Navigator) -> bool {
         // Check for Gamepad API support
         true // Simplified
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_gamepad_support(_navigator: &()) -> bool {
+        false
+    }
+
+    #[cfg(target_arch = "wasm32")]
     fn check_fullscreen_support(window: &web_sys::Window) -> bool {
         // Check for Fullscreen API support
         true // Simplified
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    fn check_fullscreen_support(_window: &()) -> bool {
+        false
     }
 
     fn check_pointer_lock_support() -> bool {
@@ -560,10 +675,18 @@ impl WebIntegration {
     }
 
     async fn setup_canvas_properties(&self, canvas: &HtmlElement) -> Result<()> {
-        // Set up canvas for game rendering
-        canvas.style().set_property("width", "100%")?;
-        canvas.style().set_property("height", "100%")?;
-        canvas.style().set_property("display", "block")?;
+        #[cfg(target_arch = "wasm32")]
+        {
+            // Set up canvas for game rendering
+            canvas.style().set_property("width", "100%")?;
+            canvas.style().set_property("height", "100%")?;
+            canvas.style().set_property("display", "block")?;
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            debug!("Would setup canvas properties");
+        }
         
         Ok(())
     }
@@ -571,23 +694,32 @@ impl WebIntegration {
 
 impl DOMManager {
     async fn new() -> Result<Self> {
-        let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
-        let document = window.document().ok_or_else(|| anyhow::anyhow!("No document object"))?;
-        
-        // Create UI containers if they don't exist
-        let ui_container = Self::create_or_get_element(&document, "game-ui", "div")?;
-        let loading_overlay = Self::create_or_get_element(&document, "loading-overlay", "div")?;
-        let error_container = Self::create_or_get_element(&document, "error-container", "div")?;
+        #[cfg(target_arch = "wasm32")]
+        {
+            let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+            let document = window.document().ok_or_else(|| anyhow::anyhow!("No document object"))?;
+            
+            // Create UI containers if they don't exist
+            let ui_container = Self::create_or_get_element(&document, "game-ui", "div")?;
+            let loading_overlay = Self::create_or_get_element(&document, "loading-overlay", "div")?;
+            let error_container = Self::create_or_get_element(&document, "error-container", "div")?;
 
-        Ok(Self {
-            document,
-            canvas_element: None,
-            ui_container: Some(ui_container),
-            loading_overlay: Some(loading_overlay),
-            error_container: Some(error_container),
-        })
+            Ok(Self {
+                document,
+                canvas_element: None,
+                ui_container: Some(ui_container),
+                loading_overlay: Some(loading_overlay),
+                error_container: Some(error_container),
+            })
+        }
+        
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            Err(anyhow::anyhow!("DOM manager not available on non-web platforms"))
+        }
     }
 
+    #[cfg(target_arch = "wasm32")]
     fn create_or_get_element(document: &Document, id: &str, tag: &str) -> Result<HtmlElement> {
         if let Some(element) = document.get_element_by_id(id) {
             Ok(element.dyn_into::<HtmlElement>()?)
@@ -604,25 +736,38 @@ impl DOMManager {
             Ok(html_element)
         }
     }
+    
+    #[cfg(not(target_arch = "wasm32"))]
+    fn create_or_get_element(_document: &Document, _id: &str, _tag: &str) -> Result<HtmlElement> {
+        Err(anyhow::anyhow!("DOM operations not available on non-web platforms"))
+    }
 }
 
 impl WebStorageManager {
     async fn new() -> Result<Self> {
-        let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+        #[cfg(target_arch = "wasm32")]
+        {
+            let window = window().ok_or_else(|| anyhow::anyhow!("No window object"))?;
+            
+            let local_storage = window.local_storage().ok().flatten();
+            let session_storage = window.session_storage().ok().flatten();
+            
+            // Check IndexedDB support
+            let indexed_db_available = true; // Simplified check
+            
+            Ok(Self {
+                local_storage,
+                session_storage,
+                indexed_db_available,
+                storage_quota: None,
+                used_storage: 0,
+            })
+        }
         
-        let local_storage = window.local_storage().ok().flatten();
-        let session_storage = window.session_storage().ok().flatten();
-        
-        // Check IndexedDB support
-        let indexed_db_available = true; // Simplified check
-        
-        Ok(Self {
-            local_storage,
-            session_storage,
-            indexed_db_available,
-            storage_quota: None,
-            used_storage: 0,
-        })
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            Err(anyhow::anyhow!("Web storage not available on non-web platforms"))
+        }
     }
 }
 

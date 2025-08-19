@@ -48,7 +48,7 @@ pub enum MatchType {
 }
 
 /// Combat modes
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum CombatMode {
     Duel,           // 1v1
     SmallGroup,     // 2v2, 3v3
@@ -82,7 +82,7 @@ pub struct PvPRanking {
     pub streak: WinStreak,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum RankTier {
     Bronze,
     Silver,

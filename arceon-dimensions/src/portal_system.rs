@@ -690,12 +690,12 @@ impl PortalSystem {
         }
     }
 
-    fn has_construction_requirements(&self, constructor_id: &Uuid, portal_class: &PortalClass) -> Result<bool, String> {
+    fn has_construction_requirements(&self, _constructor_id: &Uuid, _portal_class: &PortalClass) -> Result<bool, String> {
         // Simplified check - in real implementation would check materials, skills, etc.
         Ok(true)
     }
 
-    fn has_portal_access(&self, portal_id: Uuid, user_id: Uuid, required_level: AccessLevel) -> Result<bool, String> {
+    fn has_portal_access(&self, portal_id: Uuid, user_id: Uuid, _required_level: AccessLevel) -> Result<bool, String> {
         for key in self.portal_keys.values() {
             if key.portal_id == portal_id && key.owner_id == user_id {
                 // Simplified access level comparison
@@ -705,7 +705,7 @@ impl PortalSystem {
         Ok(false)
     }
 
-    fn calculate_travel_effects(&self, portal_id: Uuid, traveler_id: Uuid) -> Result<Vec<String>, String> {
+    fn calculate_travel_effects(&self, _portal_id: Uuid, _traveler_id: Uuid) -> Result<Vec<String>, String> {
         let mut effects = Vec::new();
         
         // Random travel effects

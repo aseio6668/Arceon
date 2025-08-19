@@ -509,7 +509,7 @@ impl ExperienceManager {
 
     /// Calculate level from total experience
     pub fn calculate_level(&self, total_experience: u64) -> u32 {
-        let curve = self.experience_curves.get(&ExperienceType::General)
+        let _curve = self.experience_curves.get(&ExperienceType::General)
             .expect("General experience curve should exist");
 
         self.calculate_level_for_type(total_experience, &ExperienceType::General)

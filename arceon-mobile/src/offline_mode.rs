@@ -414,7 +414,7 @@ impl OfflineManager {
     }
 
     /// Calculate offline rewards based on time and activities
-    pub async fn calculate_offline_rewards(&self, character_id: Uuid, offline_duration: Duration) -> Result<OfflineRewards> {
+    pub async fn calculate_offline_rewards(&self, _character_id: Uuid, offline_duration: Duration) -> Result<OfflineRewards> {
         let hours_offline = offline_duration.as_secs_f32() / 3600.0;
         let max_hours = self.config.max_offline_duration.as_secs_f32() / 3600.0;
         let effective_hours = hours_offline.min(max_hours);

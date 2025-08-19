@@ -776,6 +776,7 @@ dependencies = [
  "js-sys",
  "ndk 0.7.0",
  "ndk-glue",
+ "num_cpus",
  "objc",
  "reqwest",
  "serde",

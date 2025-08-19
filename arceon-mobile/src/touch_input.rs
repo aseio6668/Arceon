@@ -251,7 +251,7 @@ impl TouchInputHandler {
         let mut events = Vec::new();
         
         // Update or create touch
-        let touch = self.update_touch(touch_id, position, pressure, phase);
+        let touch = self.update_touch(touch_id, position, pressure, phase.clone());
         
         // Add raw touch event
         events.push(TouchEvent::Touch { touch: touch.clone() });
@@ -319,7 +319,8 @@ impl TouchInputHandler {
                     if distance_from_center <= joystick.max_radius {
                         joystick.active_touch_id = Some(touch.id);
                         joystick.current_position = touch.position;
-                        return Ok(Some(vec![self.create_joystick_event(joystick)]));
+                        let event = Self::create_joystick_event_static(joystick);
+                        return Ok(Some(vec![event]));
                     }
                 }
                 TouchPhase::Moved => {
@@ -334,7 +335,8 @@ impl TouchInputHandler {
                             joystick.current_position = joystick.center_position + direction.normalize() * joystick.max_radius;
                         }
                         
-                        return Ok(Some(vec![self.create_joystick_event(joystick)]));
+                        let event = Self::create_joystick_event_static(joystick);
+                        return Ok(Some(vec![event]));
                     }
                 }
                 TouchPhase::Ended | TouchPhase::Cancelled => {
@@ -345,7 +347,8 @@ impl TouchInputHandler {
                             joystick.current_position = joystick.center_position;
                         }
                         
-                        return Ok(Some(vec![self.create_joystick_event(joystick)]));
+                        let event = Self::create_joystick_event_static(joystick);
+                        return Ok(Some(vec![event]));
                     }
                 }
                 _ => {}
@@ -353,6 +356,35 @@ impl TouchInputHandler {
         }
 
         Ok(None)
+    }
+
+    /// Create virtual joystick event from data without self reference
+    fn create_joystick_event_from_data(&self, joystick: &VirtualJoystick) -> TouchEvent {
+        Self::create_joystick_event_static(joystick)
+    }
+
+    /// Create virtual joystick event (static helper)
+    fn create_joystick_event_static(joystick: &VirtualJoystick) -> TouchEvent {
+        let direction = joystick.current_position - joystick.center_position;
+        let magnitude = (direction.length() / joystick.max_radius).clamp(0.0, 1.0);
+        
+        // Apply dead zone
+        let adjusted_magnitude = if magnitude < joystick.dead_zone {
+            0.0
+        } else {
+            (magnitude - joystick.dead_zone) / (1.0 - joystick.dead_zone)
+        };
+
+        let normalized_direction = if magnitude > 0.0 {
+            direction.normalize()
+        } else {
+            Vec2::ZERO
+        };
+
+        TouchEvent::VirtualJoystick {
+            direction: normalized_direction,
+            magnitude: adjusted_magnitude,
+        }
     }
 
     /// Create virtual joystick event
@@ -614,7 +646,7 @@ impl TouchInputHandler {
     }
 
     /// Trigger appropriate haptic feedback
-    async fn trigger_haptic_feedback(&self, touch: &Touch, events: &[TouchEvent]) -> Result<()> {
+    async fn trigger_haptic_feedback(&self, _touch: &Touch, events: &[TouchEvent]) -> Result<()> {
         if !self.haptic_feedback.enabled {
             return Ok(());
         }

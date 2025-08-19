@@ -885,9 +885,12 @@ impl TournamentCoordinator {
             return Err(anyhow::anyhow!("Player already registered"));
         }
 
+        // Extract requirements for validation
+        let requirements = tournament.registration.requirements.clone();
+        
         // Validate requirements
-        for requirement in &tournament.registration.requirements {
-            if requirement.mandatory && !self.check_requirement(player_id, requirement)? {
+        for requirement in &requirements {
+            if requirement.mandatory && !Self::check_requirement_static(player_id, requirement)? {
                 return Err(anyhow::anyhow!("Player does not meet requirement: {}", requirement.description));
             }
         }
@@ -934,7 +937,7 @@ impl TournamentCoordinator {
     }
 
     /// Check if player meets requirement
-    fn check_requirement(&self, _player_id: PlayerId, _requirement: &RegistrationRequirement) -> Result<bool> {
+    fn check_requirement_static(_player_id: PlayerId, _requirement: &RegistrationRequirement) -> Result<bool> {
         // In real implementation, would validate against player profile
         Ok(true) // Simplified for now
     }
@@ -958,7 +961,11 @@ impl TournamentCoordinator {
             return Err(anyhow::anyhow!("Not all participants are checked in"));
         }
 
+        let participant_count = tournament.participants.len();
         tournament.status = TournamentStatus::InProgress;
+        
+        // Drop the mutable borrow before calling other methods
+        drop(tournament);
 
         // Generate brackets
         self.generate_brackets(tournament_id)?;
@@ -966,7 +973,7 @@ impl TournamentCoordinator {
         // Schedule first round
         self.schedule_next_round(tournament_id)?;
 
-        tracing::info!("Started tournament {} with {} participants", tournament_id, tournament.participants.len());
+        tracing::info!("Started tournament {} with {} participants", tournament_id, participant_count);
         Ok(())
     }
 
@@ -975,15 +982,26 @@ impl TournamentCoordinator {
         let tournament = self.tournaments.get_mut(&tournament_id)
             .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
 
-        match tournament.tournament_type {
+        let tournament_type = tournament.tournament_type.clone();
+        
+        // Drop the tournament borrow before calling bracket generation methods
+        drop(tournament);
+        
+        match tournament_type {
             TournamentType::SingleElimination => {
-                self.generate_single_elimination_bracket(tournament)?;
+                let tournament = self.tournaments.get_mut(&tournament_id)
+                    .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
+                Self::generate_single_elimination_bracket_static(tournament)?;
             },
             TournamentType::DoubleElimination => {
-                self.generate_double_elimination_bracket(tournament)?;
+                let tournament = self.tournaments.get_mut(&tournament_id)
+                    .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
+                Self::generate_double_elimination_bracket_static(tournament)?;
             },
             TournamentType::RoundRobin => {
-                self.generate_round_robin_bracket(tournament)?;
+                let tournament = self.tournaments.get_mut(&tournament_id)
+                    .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
+                Self::generate_round_robin_bracket_static(tournament)?;
             },
             _ => {
                 return Err(anyhow::anyhow!("Tournament type not yet implemented"));
@@ -994,7 +1012,7 @@ impl TournamentCoordinator {
     }
 
     /// Generate single elimination bracket
-    fn generate_single_elimination_bracket(&mut self, tournament: &mut Tournament) -> Result<()> {
+    fn generate_single_elimination_bracket_static(tournament: &mut Tournament) -> Result<()> {
         let participants: Vec<PlayerId> = tournament.participants.keys().cloned().collect();
         let participant_count = participants.len();
         
@@ -1044,12 +1062,12 @@ impl TournamentCoordinator {
     }
 
     /// Generate double elimination bracket
-    fn generate_double_elimination_bracket(&mut self, tournament: &mut Tournament) -> Result<()> {
+    fn generate_double_elimination_bracket_static(tournament: &mut Tournament) -> Result<()> {
         // Winner's bracket
-        self.generate_single_elimination_bracket(tournament)?;
+        Self::generate_single_elimination_bracket_static(tournament)?;
         
         // Losers bracket (simplified)
-        let participants: Vec<PlayerId> = tournament.participants.keys().cloned().collect();
+        let _participants: Vec<PlayerId> = tournament.participants.keys().cloned().collect();
         let losers_bracket = TournamentBracket {
             bracket_id: "losers".to_string(),
             bracket_type: BracketType::Losers,
@@ -1072,13 +1090,13 @@ impl TournamentCoordinator {
     }
 
     /// Generate round robin bracket
-    fn generate_round_robin_bracket(&mut self, tournament: &mut Tournament) -> Result<()> {
+    fn generate_round_robin_bracket_static(tournament: &mut Tournament) -> Result<()> {
         let participants: Vec<PlayerId> = tournament.participants.keys().cloned().collect();
         let participant_count = participants.len();
         
         // In round robin, each player plays every other player once
         let total_rounds = participant_count - 1;
-        let matches_per_round = participant_count / 2;
+        let _matches_per_round = participant_count / 2;
 
         let bracket = TournamentBracket {
             bracket_id: "round_robin".to_string(),
@@ -1125,25 +1143,30 @@ impl TournamentCoordinator {
     /// Complete tournament match
     pub fn complete_match(&mut self, tournament_id: TournamentId, match_id: MatchId, 
                          result: TournamentMatchResult) -> Result<()> {
-        let tournament = self.tournaments.get_mut(&tournament_id)
-            .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
+        let bracket_id = {
+            let tournament = self.tournaments.get_mut(&tournament_id)
+                .ok_or_else(|| anyhow::anyhow!("Tournament not found"))?;
 
-        if let Some(tournament_match) = tournament.matches.get_mut(&match_id) {
-            tournament_match.status = TournamentMatchStatus::Completed;
-            tournament_match.result = Some(result.clone());
+            if let Some(tournament_match) = tournament.matches.get_mut(&match_id) {
+                tournament_match.status = TournamentMatchStatus::Completed;
+                tournament_match.result = Some(result.clone());
 
-            // Update participant performance
-            if let Some(winner) = result.winner {
-                if let Some(participant) = tournament.participants.get_mut(&winner) {
-                    participant.performance.wins += 1;
-                    participant.match_history.push(match_id);
+                // Update participant performance
+                if let Some(winner) = result.winner {
+                    if let Some(participant) = tournament.participants.get_mut(&winner) {
+                        participant.performance.wins += 1;
+                        participant.match_history.push(match_id);
+                    }
                 }
+
+                tournament_match.bracket_id.clone()
+            } else {
+                return Ok(());
             }
+        };
 
-            // Check if round is complete and advance bracket
-            self.check_round_completion(tournament_id, tournament_match.bracket_id.clone())?;
-        }
-
+        // Check if round is complete and advance bracket
+        self.check_round_completion(tournament_id, bracket_id)?;
         Ok(())
     }
 

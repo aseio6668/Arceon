@@ -361,7 +361,7 @@ impl MultiDimensionalManager {
         Ok(())
     }
 
-    fn process_dimensional_events(&mut self, delta_time: f64) -> Result<(), String> {
+    fn process_dimensional_events(&mut self, _delta_time: f64) -> Result<(), String> {
         let now = Utc::now();
         
         // Remove expired events

@@ -117,13 +117,13 @@ impl SteamAdapter {
     /// Get current Steam user information
     #[cfg(feature = "steam-integration")]
     fn get_steam_user_info(&self) -> PlatformResult<SteamUserInfo> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
         
         let utils = client.utils();
-        let _friends = client.friends();
+        let friends = client.friends();
         let user = client.user();
         
         let steam_id = user.steam_id().raw();
@@ -151,12 +151,12 @@ impl SteamAdapter {
     /// Get Steam achievements
     #[cfg(feature = "steam-integration")]
     fn get_steam_achievements(&self) -> PlatformResult<Vec<SteamAchievementInfo>> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
         
-        let _user_stats = client.user_stats();
+        let user_stats = client.user_stats();
         
         // This would require the actual achievement names from your game
         // For now, return an empty list
@@ -166,12 +166,12 @@ impl SteamAdapter {
     /// Unlock Steam achievement
     #[cfg(feature = "steam-integration")]
     fn unlock_steam_achievement(&self, api_name: &str) -> PlatformResult<()> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
         
-        let _user_stats = client.user_stats();
+        let user_stats = client.user_stats();
         
         // Steam achievement API varies by version - using simplified approach
         let achievement = user_stats.achievement(api_name);
@@ -193,12 +193,12 @@ impl SteamAdapter {
     /// Get Steam friends list
     #[cfg(feature = "steam-integration")]
     fn get_steam_friends(&self) -> PlatformResult<Vec<Friend>> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
         
-        let _friends = client.friends();
+        let friends = client.friends();
         let _friend_count = 0; // Steam friends API varies by version
         
         let friend_list = Vec::new();
@@ -213,7 +213,7 @@ impl SteamAdapter {
     /// Subscribe to Steam Workshop item
     #[cfg(feature = "steam-integration")]
     pub async fn subscribe_workshop_item(&self, published_file_id: u64) -> PlatformResult<()> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
@@ -227,12 +227,12 @@ impl SteamAdapter {
     /// Launch Steam overlay
     #[cfg(feature = "steam-integration")]
     pub fn show_steam_overlay(&self, overlay_type: &str) -> PlatformResult<()> {
-        let _client = self.client.as_ref()
+        let client = self.client.as_ref()
             .ok_or_else(|| PlatformError::SteamError {
                 message: "Steam client not initialized".to_string(),
             })?;
         
-        let _friends = client.friends();
+        let friends = client.friends();
         
         match overlay_type {
             "friends" => friends.activate_game_overlay("friends"),
@@ -458,13 +458,13 @@ impl PlatformAdapter for SteamAdapter {
     async fn get_analytics(&self, user_id: &str) -> PlatformResult<PlatformAnalytics> {
         #[cfg(feature = "steam-integration")]
         {
-            let _client = self.client.as_ref()
+            let client = self.client.as_ref()
                 .ok_or_else(|| PlatformError::SteamError {
                     message: "Steam client not initialized".to_string(),
                 })?;
             
             // Get Steam statistics
-            let _user_stats = client.user_stats();
+            let user_stats = client.user_stats();
             
             let mut platform_metrics = HashMap::new();
             

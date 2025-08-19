@@ -78,7 +78,7 @@ pub struct DistributionRule {
     pub enabled: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum RewardContext {
     MatchVictory,
     MatchParticipation,

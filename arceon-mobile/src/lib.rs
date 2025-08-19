@@ -209,19 +209,29 @@ impl MobilePlatform {
         return Self::detect_ios_platform().await;
 
         #[cfg(target_arch = "wasm32")]
-        return Self::detect_web_platform().await;
+        {
+            return Self::detect_web_platform().await;
+        }
 
         #[cfg(target_os = "windows")]
-        return Self::detect_windows_platform().await;
+        {
+            return Self::detect_windows_platform().await;
+        }
 
         #[cfg(target_os = "macos")]
-        return Self::detect_macos_platform().await;
+        {
+            return Self::detect_macos_platform().await;
+        }
 
         #[cfg(target_os = "linux")]
-        return Self::detect_linux_platform().await;
+        {
+            return Self::detect_linux_platform().await;
+        }
 
-        // Fallback for unknown platforms
-        Ok(PlatformInfo {
+        #[cfg(not(any(target_arch = "wasm32", target_os = "windows", target_os = "macos", target_os = "linux")))]
+        {
+            // Fallback for unknown platforms
+            Ok(PlatformInfo {
             platform_type: PlatformType::Desktop { os: DesktopOS::Other("Unknown".to_string()) },
             device_model: "Unknown".to_string(),
             os_version: "Unknown".to_string(),
@@ -246,6 +256,7 @@ impl MobilePlatform {
             battery_level: None,
             is_power_saver_mode: false,
         })
+        }
     }
 
     #[cfg(target_os = "android")]

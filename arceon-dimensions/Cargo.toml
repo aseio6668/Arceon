@@ -1,0 +1,38 @@
+[package]
+name = "arceon-dimensions"
+version = "0.1.0"
+edition = "2021"
+description = "Multi-dimensional gameplay systems including portals, realms, and cross-dimensional mechanics for Arceon"
+
+[dependencies]
+arceon-core = { path = "../arceon-core" }
+arceon-ai = { path = "../arceon-ai" }
+arceon-economy = { path = "../arceon-economy" }
+arceon-blockchain = { path = "../arceon-blockchain" }
+arceon-governance = { path = "../arceon-governance" }
+arceon-world-systems = { path = "../arceon-world-systems" }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+rand = "0.8"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Mathematical operations for dimensional calculations
+nalgebra = "0.32"
+ndarray = { version = "0.15", optional = true }
+
+# Graph algorithms for dimensional relationships
+petgraph = "0.6"
+
+# Physics simulations for dimensional mechanics
+rapier3d = { version = "0.18", optional = true }
+
+# Noise generation for procedural dimensions
+noise = "0.9"
+
+[features]
+default = []
+advanced-physics = ["ndarray", "rapier3d"]

@@ -1174,7 +1174,7 @@ impl TokenEconomySystem {
     }
 
     /// Calculate transfer fee
-    async fn calculate_transfer_fee(&self, token_symbol: &str, amount: u64) -> Result<u64> {
+    async fn calculate_transfer_fee(&self, _token_symbol: &str, amount: u64) -> Result<u64> {
         // Simple fee calculation - could be made more sophisticated
         let base_fee = 10; // Base fee in smallest token unit
         let percentage_fee = (amount as f64 * 0.001) as u64; // 0.1%
@@ -1342,7 +1342,7 @@ impl TokenEconomySystem {
     /// Get comprehensive economy statistics
     pub async fn get_economy_stats(&self) -> Result<TokenEconomyStats> {
         let metrics = self.metrics.read().await;
-        let manager = self.token_manager.read().await;
+        let _manager = self.token_manager.read().await;
         let defi = self.defi_protocols.read().await;
         let governance = self.governance_system.read().await;
 

@@ -24,7 +24,7 @@ pub struct AFKSystem {
     /// Performance metrics and statistics
     metrics: Arc<RwLock<AFKMetrics>>,
     /// Command queue for AFK operations
-    command_queue: Arc<RwLock<VecDeque<AFKCommand>>>,
+    _command_queue: Arc<RwLock<VecDeque<AFKCommand>>>,
     /// Integration with other systems (systems not implemented - commented out)
     // combat_system: Option<Arc<RwLock<CombatSystem>>>,
     // crafting_system: Option<Arc<RwLock<CraftingSystem>>>,
@@ -302,11 +302,11 @@ pub struct AFKAIEngine {
     /// Behavior trees for different AFK modes
     behavior_trees: HashMap<String, AFKBehaviorTree>,
     /// Decision making parameters
-    decision_weights: AFKDecisionWeights,
+    _decision_weights: AFKDecisionWeights,
     /// Learning system for improving AFK efficiency
     learning_system: AFKLearningSystem,
     /// Threat assessment for safety
-    threat_assessor: ThreatAssessmentSystem,
+    _threat_assessor: ThreatAssessmentSystem,
 }
 
 /// Behavior tree for AFK AI decision making
@@ -684,7 +684,7 @@ impl AFKSystem {
             config,
             ai_engine: Arc::new(RwLock::new(ai_engine)),
             metrics: Arc::new(RwLock::new(AFKMetrics::default())),
-            command_queue: Arc::new(RwLock::new(VecDeque::new())),
+            _command_queue: Arc::new(RwLock::new(VecDeque::new())),
             // combat_system: None,
             // crafting_system: None,
             // gathering_system: None,
@@ -1167,7 +1167,7 @@ impl AFKAIEngine {
 
         Ok(Self {
             behavior_trees,
-            decision_weights: AFKDecisionWeights {
+            _decision_weights: AFKDecisionWeights {
                 safety_priority: 0.8,
                 efficiency_priority: 0.6,
                 experience_priority: 0.7,
@@ -1181,7 +1181,7 @@ impl AFKAIEngine {
                 optimization_suggestions: Vec::new(),
                 performance_history: VecDeque::new(),
             },
-            threat_assessor: ThreatAssessmentSystem {
+            _threat_assessor: ThreatAssessmentSystem {
                 threat_levels: HashMap::new(),
                 player_threat_history: HashMap::new(),
                 environmental_hazards: HashMap::new(),

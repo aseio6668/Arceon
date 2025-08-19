@@ -233,10 +233,10 @@ impl VitalManager {
         self.apply_skill_influences(being);
     }
 
-    fn update_vital(&self, vital: &mut Vital, delta_time: f64, being: &Being) {
+    fn _update_vital(&self, vital: &mut Vital, delta_time: f64, being: &Being) {
         // Calculate regeneration with modifiers
         let base_regen = vital.regeneration_rate;
-        let skill_modifier = self.calculate_skill_modifier(vital, being);
+        let skill_modifier = self._calculate_skill_modifier(vital, being);
         let total_regen = base_regen * skill_modifier;
 
         // Apply regeneration
@@ -271,7 +271,7 @@ impl VitalManager {
     }
 
     /// Calculate skill modifier for vital regeneration
-    fn calculate_skill_modifier(&self, vital: &Vital, being: &Being) -> f64 {
+    fn _calculate_skill_modifier(&self, vital: &Vital, being: &Being) -> f64 {
         let mut modifier = 1.0;
 
         // Check if being has the related skill

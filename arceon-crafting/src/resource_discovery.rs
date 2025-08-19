@@ -314,7 +314,7 @@ pub enum TechnologyLevel {
     Primitive,
     Basic,
     Advanced,
-    Cutting_Edge,
+    CuttingEdge,
     Experimental,
     Magical,
     Hybrid,

@@ -72,7 +72,7 @@ pub struct BlockchainManager;
 pub struct ArceonCore {
     world: World,
     schedule: Schedule,
-    config: Config,
+    _config: Config,
     state: Arc<RwLock<GameState>>,
     network_bridge: Option<Box<dyn NetworkBridge>>,
     is_server_mode: bool,
@@ -97,7 +97,7 @@ impl ArceonCore {
         Ok(Self {
             world,
             schedule,
-            config,
+            _config: config,
             state,
             network_bridge: None,
             is_server_mode: false,

@@ -23,7 +23,7 @@ pub struct DeathSystem {
     /// Death system metrics
     metrics: Arc<RwLock<DeathSystemMetrics>>,
     /// Integration with vital manager
-    vital_manager: Option<Arc<RwLock<VitalManager>>>,
+    _vital_manager: Option<Arc<RwLock<VitalManager>>>,
 }
 
 /// Record of a character's death
@@ -436,7 +436,7 @@ impl DeathSystem {
             area_safe_spots: Arc::new(RwLock::new(HashMap::new())),
             config,
             metrics: Arc::new(RwLock::new(DeathSystemMetrics::default())),
-            vital_manager: None,
+            _vital_manager: None,
         })
     }
 

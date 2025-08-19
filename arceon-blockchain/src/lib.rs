@@ -13,8 +13,8 @@ use sha2::{Sha256, Digest};
 pub mod nft_system;
 pub mod token_economy;
 
-pub use nft_system::*;
-pub use token_economy::*;
+pub use nft_system::{NFTSystem, NFTToken, NFTMetadata, NFTMetrics, NFTTransfer, NFTAttribute, NFTConfig};
+pub use token_economy::{TokenEconomySystem, TokenDefinition, TokenTransaction, TokenLock, GovernanceTokenSystem};
 
 // Consensus types integrated into blockchain module
 pub type BlockHash = [u8; 32];
@@ -393,7 +393,7 @@ impl BlockchainManager {
     }
     
     /// Initialize blockchain with consensus manager
-    pub async fn start(&mut self, node_id: Uuid, is_masternode: bool, stake_amount: u64) -> Result<()> {
+    pub async fn start(&mut self, _node_id: Uuid, is_masternode: bool, _stake_amount: u64) -> Result<()> {
         info!("🔗 Initializing blockchain system with consensus");
 
         // Enable consensus for decentralized mode

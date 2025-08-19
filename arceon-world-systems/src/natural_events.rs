@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, BTreeMap, HashSet};
+use std::collections::HashMap;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
 use rand::Rng;
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector3;
 // Removed problematic imports - game_state and decision_engine modules don't exist  
 // use arceon_core::game_state::*;
 // use arceon_ai::decision_engine::*;

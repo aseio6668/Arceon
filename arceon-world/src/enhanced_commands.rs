@@ -5,7 +5,6 @@ use crate::targeting::{TargetingSystem, FoundEntity};
 use crate::command_engine::{GameCommand, CommandResult, EntityState};
 use crate::trading_system::TradingSystem;
 use arceon_core::entities::character_creation::CharacterCreationSystem;
-use arceon_core::entities::item::{Item, ItemType, WeaponType};
 
 /// Enhanced command processor with targeting and combat support
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -188,13 +187,13 @@ impl EnhancedCommandProcessor {
             
             if let Some(found_entity) = self.targeting_system.find_entity_by_name(area_name, target_name) {
                 match found_entity {
-                    FoundEntity::Npc(target_id, name) | FoundEntity::Player(target_id, name) => {
+                    FoundEntity::Npc(target_id, _name) | FoundEntity::Player(target_id, _name) => {
                         match self.targeting_system.set_npc_target(entity.id, target_id, area_name) {
                             Ok(message) => CommandResult::Success(message),
                             Err(error) => CommandResult::Failure(error),
                         }
                     },
-                    FoundEntity::Object(target_id, name) => {
+                    FoundEntity::Object(target_id, _name) => {
                         match self.targeting_system.set_object_target(entity.id, target_id, area_name) {
                             Ok(message) => CommandResult::Success(message),
                             Err(error) => CommandResult::Failure(error),
@@ -210,7 +209,7 @@ impl EnhancedCommandProcessor {
     }
 
     /// Process hail command (greeting)
-    fn process_hail_command(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn process_hail_command(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         if let Some(target) = self.targeting_system.get_npc_target(entity.id) {
             if !self.targeting_system.is_within_interaction_range(&entity.position, &target.position) {
                 return CommandResult::Failure("Target is too far away to hail".to_string());
@@ -376,7 +375,7 @@ impl EnhancedCommandProcessor {
             // Try to find item by name if no target is set
             if let Some(item_name) = command.parameters.get("item") {
                 if let Some(found_entity) = self.targeting_system.find_entity_by_name(&entity.position.area_name, item_name) {
-                    if let FoundEntity::Object(object_id, name) = found_entity {
+                    if let FoundEntity::Object(object_id, _name) = found_entity {
                         match self.targeting_system.set_object_target(entity.id, object_id, &entity.position.area_name) {
                             Ok(_) => self.process_pickup_command(command, entity),
                             Err(error) => CommandResult::Failure(error),
@@ -454,7 +453,7 @@ impl EnhancedCommandProcessor {
     }
 
     /// Process attack command
-    fn process_attack_command(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn process_attack_command(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         if let Some(target) = self.targeting_system.get_npc_target(entity.id) {
             if !target.can_attack {
                 return CommandResult::Failure(format!("{} cannot be attacked", target.target_name));
@@ -503,7 +502,7 @@ impl EnhancedCommandProcessor {
     }
 
     /// Process skill command
-    fn process_skill_command(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn process_skill_command(&mut self, command: &GameCommand, _entity: &EntityState) -> CommandResult {
         if let Some(skill_name) = command.parameters.get("name") {
             // TODO: Integrate with skill system
             CommandResult::Success(format!("You attempt to use skill: {}", skill_name))
@@ -513,13 +512,13 @@ impl EnhancedCommandProcessor {
     }
 
     /// Process macro command
-    fn process_macro_command(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn process_macro_command(&mut self, _command: &GameCommand, _entity: &EntityState) -> CommandResult {
         // TODO: Implement skill macro system
         CommandResult::Success("Macro system not yet implemented".to_string())
     }
 
     /// Process who command (list players and NPCs in area)
-    fn process_who_command(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn process_who_command(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let area_name = &entity.position.area_name;
         let npcs = self.targeting_system.list_npcs_in_area(area_name);
         let players = self.targeting_system.list_players_in_area(area_name);
@@ -606,7 +605,7 @@ impl EnhancedCommandProcessor {
     }
 
     /// Calculate attack damage based on entity's combat stats
-    fn calculate_attack_damage(&self, entity_id: Uuid) -> f64 {
+    fn calculate_attack_damage(&self, _entity_id: Uuid) -> f64 {
         // TODO: Integrate with actual skill system
         // For now, return a basic damage value
         10.0 + rand::random::<f64>() * 5.0
@@ -734,4 +733,3 @@ impl ChatSystem {
     }
 }
 
-use rand::Rng;

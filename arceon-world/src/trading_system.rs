@@ -524,7 +524,7 @@ impl TradingSystem {
         }
     }
 
-    fn handle_settle_trade(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn handle_settle_trade(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let trade_id = match self.find_active_trade_for_player(entity.id) {
             Some(id) => id,
             None => return CommandResult::Failure("No active trade found".to_string()),
@@ -563,7 +563,7 @@ impl TradingSystem {
         CommandResult::Success(message.to_string())
     }
 
-    fn handle_confirm_trade(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn handle_confirm_trade(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let trade_id = match self.find_active_trade_for_player(entity.id) {
             Some(id) => id,
             None => return CommandResult::Failure("No active trade found".to_string()),
@@ -609,7 +609,7 @@ impl TradingSystem {
         }
     }
 
-    fn handle_cancel_trade(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn handle_cancel_trade(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let trade_id = match self.find_active_trade_for_player(entity.id) {
             Some(id) => id,
             None => return CommandResult::Failure("No active trade found".to_string()),
@@ -626,7 +626,7 @@ impl TradingSystem {
         }
     }
 
-    fn handle_trade_status(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn handle_trade_status(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let trade_id = match self.find_active_trade_for_player(entity.id) {
             Some(id) => id,
             None => return CommandResult::Failure("No active trade found".to_string()),
@@ -688,7 +688,7 @@ impl TradingSystem {
         CommandResult::Success(status)
     }
 
-    fn handle_trade_history(&mut self, command: &GameCommand, entity: &EntityState) -> CommandResult {
+    fn handle_trade_history(&mut self, _command: &GameCommand, entity: &EntityState) -> CommandResult {
         let player_trades: Vec<&CompletedTrade> = self.trade_history.iter()
             .filter(|trade| trade.participants.0 == entity.id || trade.participants.1 == entity.id)
             .take(10) // Show last 10 trades

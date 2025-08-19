@@ -7,7 +7,7 @@ prerequisites, synergies, and dynamic skill unlocking.
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use anyhow::Result;
 use arceon_core::entities::being::SkillType;
 

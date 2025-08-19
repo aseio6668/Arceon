@@ -17,7 +17,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use sha2::Digest;
+// use sha2::Digest; // Unused import
 
 /// Main NFT system manager
 #[derive(Debug)]
@@ -1226,7 +1226,7 @@ impl NFTSystem {
         }
         
         // Collect pool information before making changes
-        let (pool_is_active, pool_required_collection, pool_required_traits, pool_min_duration) = {
+        let (_pool_is_active, pool_required_collection, pool_required_traits, pool_min_duration) = {
             let pool = staking_system.staking_pools.get(&pool_id)
                 .ok_or_else(|| anyhow::anyhow!("Staking pool not found"))?;
             

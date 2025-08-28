@@ -7,26 +7,283 @@ pub mod command_engine;
 pub mod targeting;
 pub mod enhanced_commands;
 pub mod trading_system;
+pub mod race_database;
 
 use anyhow::Result;
-use arceon_core::entities::world::{Area, AreaType, AreaSize, CultureType};
+use arceon_core::entities::world::{
+    Area, AreaType, AreaSize, CultureType, Planet, PlanetType, HabitabilityType, 
+    SolarSystem, StarType, Galaxy, GalaxyType, AtmosphereType, SurfaceConditions, 
+    TechnologyLevel, WeatherCondition, UniversalCoordinates
+};
 use arceon_core::entities::being::Race;
+use uuid::Uuid;
 pub use area_generator::AreaGenerator;
 pub use area_manager::AreaManager;
 pub use genesis::*;
 pub use runestone_knowledge::*;
 pub use command_engine::*;
+pub use race_database::*;
 
-/// World generation and management systems
-pub struct WorldManager {
+/// Universe generation and management systems
+pub struct UniverseManager {
     area_generator: AreaGenerator,
+    pub galaxies: Vec<Galaxy>,
+    pub solar_systems: Vec<SolarSystem>,
+    pub planets: Vec<Planet>,
+    pub race_database: RaceDatabase,
 }
 
-impl WorldManager {
+impl UniverseManager {
     pub fn new() -> Self {
         Self {
             area_generator: AreaGenerator::new(),
+            galaxies: Vec::new(),
+            solar_systems: Vec::new(),
+            planets: Vec::new(),
+            race_database: RaceDatabase::new(),
         }
+    }
+    
+    /// Generate the entire Arceon universe with 13 planets across multiple solar systems and galaxies
+    pub fn generate_universe(&mut self) -> Result<()> {
+        // Create the primary galaxy (Ethereal Spiral)
+        let mut primary_galaxy = Galaxy::new("Ethereal Spiral".to_string(), GalaxyType::Spiral);
+        primary_galaxy.description = "The primary galaxy containing most of the inhabited worlds, including Espan. A massive spiral galaxy with billions of stars and countless worlds.".to_string();
+        
+        // Create the distant galaxy (Void's Edge)
+        let mut distant_galaxy = Galaxy::new("Void's Edge".to_string(), GalaxyType::Elliptical);
+        distant_galaxy.description = "A distant elliptical galaxy containing the mysterious planet Calypso. Its isolation makes communication extremely difficult.".to_string();
+        
+        let primary_galaxy_id = primary_galaxy.id;
+        let distant_galaxy_id = distant_galaxy.id;
+        
+        // Solar System 1: Aethon System (contains 4 planets including Espan)
+        let mut aethon_system = SolarSystem::new("Aethon System".to_string(), primary_galaxy_id, StarType::MainSequence);
+        aethon_system.description = "A stable solar system with a golden sun and four diverse worlds. Home to Espan and three other inhabited planets.".to_string();
+        aethon_system.star_mass = 1.1;
+        let aethon_system_id = aethon_system.id;
+        
+        // Solar System 2: Nyx Binary System (contains 2 planets)
+        let mut nyx_system = SolarSystem::new("Nyx Binary System".to_string(), primary_galaxy_id, StarType::BinarySystem);
+        nyx_system.description = "A unique binary star system where two stars dance around each other, creating exotic day-night cycles on its planets.".to_string();
+        nyx_system.star_mass = 1.5;
+        let nyx_system_id = nyx_system.id;
+        
+        // Scattered systems for 4 isolated planets
+        let mut isolated_systems = Vec::new();
+        for i in 0..4 {
+            let mut system = SolarSystem::new(
+                format!("Solitary System {}", i + 1), 
+                primary_galaxy_id, 
+                StarType::MainSequence
+            );
+            system.description = format!("An isolated solar system far from other inhabited worlds, containing a single planet with unique characteristics.");
+            isolated_systems.push(system);
+        }
+        
+        // Distant galaxy system for Calypso
+        let mut calypso_system = SolarSystem::new("Serenity System".to_string(), distant_galaxy_id, StarType::MainSequence);
+        calypso_system.description = "The sole known system in the distant Void's Edge galaxy, containing the enigmatic planet Calypso.".to_string();
+        let calypso_system_id = calypso_system.id;
+        
+        // Generate the 13 planets
+        self.planets = self.generate_all_planets(
+            aethon_system_id,
+            nyx_system_id,
+            &isolated_systems,
+            calypso_system_id,
+        )?;
+        
+        // Add planets to their respective systems
+        aethon_system.planets = self.planets.iter()
+            .filter(|p| p.solar_system_id == aethon_system_id)
+            .map(|p| p.id)
+            .collect();
+            
+        nyx_system.planets = self.planets.iter()
+            .filter(|p| p.solar_system_id == nyx_system_id)
+            .map(|p| p.id)
+            .collect();
+            
+        calypso_system.planets = self.planets.iter()
+            .filter(|p| p.solar_system_id == calypso_system_id)
+            .map(|p| p.id)
+            .collect();
+            
+        for (i, system) in isolated_systems.iter_mut().enumerate() {
+            system.planets = self.planets.iter()
+                .filter(|p| p.name == format!("Isolated World {}", i + 1))
+                .map(|p| p.id)
+                .collect();
+        }
+        
+        // Store all systems
+        self.solar_systems.push(aethon_system);
+        self.solar_systems.push(nyx_system);
+        self.solar_systems.extend(isolated_systems);
+        self.solar_systems.push(calypso_system);
+        
+        // Update galaxies with their systems
+        primary_galaxy.solar_systems = self.solar_systems.iter()
+            .filter(|s| s.galaxy_id == primary_galaxy_id)
+            .map(|s| s.id)
+            .collect();
+            
+        distant_galaxy.solar_systems = self.solar_systems.iter()
+            .filter(|s| s.galaxy_id == distant_galaxy_id)
+            .map(|s| s.id)
+            .collect();
+        
+        self.galaxies.push(primary_galaxy);
+        self.galaxies.push(distant_galaxy);
+        
+        // Generate the comprehensive race database
+        self.race_database.generate_complete_database()
+            .map_err(|e| anyhow::anyhow!("Failed to generate race database: {}", e))?;
+        
+        Ok(())
+    }
+    
+    /// Generate all 13 planets with their specified distribution
+    fn generate_all_planets(
+        &mut self,
+        aethon_system_id: Uuid,
+        nyx_system_id: Uuid,
+        isolated_systems: &[SolarSystem],
+        calypso_system_id: Uuid,
+    ) -> Result<Vec<Planet>> {
+        let mut planets = Vec::new();
+        
+        // 4 planets in Aethon System (including Espan)
+        planets.push(self.create_espan(aethon_system_id)?);
+        planets.push(self.create_planet("Verdania".to_string(), aethon_system_id, PlanetType::Forest, HabitabilityType::HighlyHabitable, vec![Race::Elf, Race::Halfling])?);
+        planets.push(self.create_planet("Pyros".to_string(), aethon_system_id, PlanetType::Volcanic, HabitabilityType::Harsh, vec![Race::Dragonborn, Race::Dwarf])?);
+        planets.push(self.create_planet("Aquatica".to_string(), aethon_system_id, PlanetType::Ocean, HabitabilityType::EarthLike, vec![Race::Human])?);
+        
+        // 2 planets in Nyx Binary System
+        planets.push(self.create_planet("Lumina".to_string(), nyx_system_id, PlanetType::Crystal, HabitabilityType::Exotic, vec![Race::Gnome])?);
+        planets.push(self.create_planet("Umbra".to_string(), nyx_system_id, PlanetType::Underground, HabitabilityType::Exotic, vec![Race::Orc, Race::Tiefling])?);
+        
+        // 4 isolated planets in separate systems
+        for (i, system) in isolated_systems.iter().enumerate() {
+            let planet_name = match i {
+                0 => "Glacialis",
+                1 => "Tempest",
+                2 => "Seraphim",
+                3 => "Nexus",
+                _ => "Unknown",
+            };
+            
+            let (planet_type, habitability, races) = match i {
+                0 => (PlanetType::Ice, HabitabilityType::Harsh, vec![Race::Human]),
+                1 => (PlanetType::Desert, HabitabilityType::EarthLike, vec![Race::Human]),
+                2 => (PlanetType::Floating, HabitabilityType::Exotic, vec![Race::Human]),
+                3 => (PlanetType::Terrestrial, HabitabilityType::HighlyHabitable, vec![Race::Human]),
+                _ => (PlanetType::Terrestrial, HabitabilityType::EarthLike, vec![Race::Human]),
+            };
+            
+            planets.push(self.create_planet(planet_name.to_string(), system.id, planet_type, habitability, races)?);
+        }
+        
+        // The 13th planet: Calypso in distant galaxy
+        planets.push(self.create_calypso(calypso_system_id)?);
+        
+        Ok(planets)
+    }
+    
+    /// Create Espan as the primary starting planet
+    fn create_espan(&mut self, solar_system_id: Uuid) -> Result<Planet> {
+        let mut espan = Planet::new(
+            "Espan".to_string(),
+            solar_system_id,
+            PlanetType::Terrestrial,
+            HabitabilityType::HighlyHabitable,
+        );
+        
+        espan.description = "A diverse world of kingdoms, forests, mountains, and mystical places. The birthplace of many races and the heart of civilization in the Aethon System. Medieval fantasy setting where magic and mystery intertwine with daily life.".to_string();
+        espan.dominant_species = vec![Race::Human, Race::Elf, Race::Dwarf, Race::Gnome, Race::Halfling, Race::Orc, Race::Dragonborn, Race::Tiefling];
+        espan.orbital_distance = 1.0;
+        espan.gravity_multiplier = 1.0;
+        espan.atmosphere_composition = AtmosphereType::Breathable;
+        espan.technology_level = TechnologyLevel::Medieval;
+        
+        espan.surface_conditions = SurfaceConditions {
+            temperature_range: (-10, 35),
+            weather_patterns: vec![
+                WeatherCondition::Clear, 
+                WeatherCondition::Cloudy, 
+                WeatherCondition::Rainy, 
+                WeatherCondition::Snowy
+            ],
+            natural_hazards: vec!["Seasonal storms".to_string(), "Mountain avalanches".to_string()],
+            magical_phenomena: vec!["Ley line convergences".to_string(), "Mystical auroras".to_string()],
+        };
+        
+        // Generate areas for Espan using existing system
+        let areas = self.generate_espan()?;
+        espan.areas = areas.iter().map(|a| a.id).collect();
+        
+        Ok(espan)
+    }
+    
+    /// Create Calypso as the distant 13th planet
+    fn create_calypso(&mut self, solar_system_id: Uuid) -> Result<Planet> {
+        let mut calypso = Planet::new(
+            "Calypso".to_string(),
+            solar_system_id,
+            PlanetType::Floating,
+            HabitabilityType::Exotic,
+        );
+        
+        calypso.description = "A mysterious world of floating islands and sky cities, shrouded in perpetual twilight. Located in the distant Void's Edge galaxy, Calypso remains largely unexplored and cut off from all other worlds. Strange gravitational anomalies keep landmasses suspended in the atmosphere.".to_string();
+        calypso.dominant_species = vec![Race::Human]; // Unique human subspecies adapted to floating world
+        calypso.orbital_distance = 1.2;
+        calypso.gravity_multiplier = 0.7;
+        calypso.atmosphere_composition = AtmosphereType::Magical;
+        calypso.technology_level = TechnologyLevel::Hybrid;
+        
+        calypso.surface_conditions = SurfaceConditions {
+            temperature_range: (5, 25),
+            weather_patterns: vec![WeatherCondition::Foggy, WeatherCondition::Windy],
+            natural_hazards: vec!["Gravitational storms".to_string(), "Island drift".to_string()],
+            magical_phenomena: vec!["Levitation fields".to_string(), "Temporal distortions".to_string()],
+        };
+        
+        Ok(calypso)
+    }
+    
+    /// Create a generic planet with specified characteristics
+    fn create_planet(
+        &mut self,
+        name: String,
+        solar_system_id: Uuid,
+        planet_type: PlanetType,
+        habitability: HabitabilityType,
+        dominant_species: Vec<Race>,
+    ) -> Result<Planet> {
+        let mut planet = Planet::new(name.clone(), solar_system_id, planet_type.clone(), habitability);
+        
+        planet.dominant_species = dominant_species;
+        planet.description = match planet_type {
+            PlanetType::Forest => format!("{} is a world covered in vast ancient forests, where nature reigns supreme and magical creatures dwell in harmony with the dominant races.", name),
+            PlanetType::Volcanic => format!("{} is a world of active volcanoes and molten landscapes, where hardy races have adapted to the harsh, fiery environment.", name),
+            PlanetType::Ocean => format!("{} is primarily covered by vast oceans with scattered islands, where maritime civilizations have flourished.", name),
+            PlanetType::Crystal => format!("{} is a world where massive crystal formations create a landscape of perpetual twilight and magical resonance.", name),
+            PlanetType::Underground => format!("{} appears barren on the surface, but vast underground civilizations thrive in its extensive cave systems.", name),
+            PlanetType::Ice => format!("{} is a frozen world where ice and snow dominate, requiring great resilience from its inhabitants.", name),
+            PlanetType::Desert => format!("{} is a world of endless deserts and oasis settlements, where water is precious and survival requires cunning.", name),
+            PlanetType::Floating => format!("{} defies conventional physics with floating landmasses and sky-bound civilizations.", name),
+            _ => format!("{} is a diverse world with its own unique characteristics and challenges.", name),
+        };
+        
+        // Set appropriate technology levels based on planet type and species
+        planet.technology_level = match planet_type {
+            PlanetType::Crystal | PlanetType::Floating => TechnologyLevel::Magical,
+            PlanetType::Underground => TechnologyLevel::Industrial,
+            _ => TechnologyLevel::Medieval,
+        };
+        
+        Ok(planet)
     }
     
     /// Generate the world of Espan with race-specific starting areas
@@ -139,7 +396,7 @@ impl WorldManager {
             AreaSize::Large,
             6, // High danger due to harsh conditions
         )?;
-        crystal_desert.description = "An endless expanse of golden sand dotted with mysterious crystal formations that hum with magical energy. Mirages dance on the horizon, and ancient ruins peek through the dunes, holding secrets of civilizations long past.".to_string();
+        crystal_desert.description = "An endless expanse of golden sand dotted with mysterious crystal formations that hum with magical energy. Mirages dance on the horizon, and ancient ruins peek through the dunes, holding secrets of civilizations long past on the planet Espan.".to_string();
         areas.push(crystal_desert);
         
         // Swampland

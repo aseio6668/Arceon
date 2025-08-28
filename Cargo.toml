@@ -40,6 +40,10 @@ name = "arceon-server"
 path = "src/server.rs"
 
 [[bin]]
+name = "arceon-mini-server"
+path = "src/mini_server.rs"
+
+[[bin]]
 name = "arceon-contribution"
 path = "src/contribution.rs"
 

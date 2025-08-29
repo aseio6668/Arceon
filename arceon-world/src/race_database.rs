@@ -90,6 +90,8 @@ pub enum RaceCategory {
     
     // Planar and dimensional
     PlanarHybrid, VoidTouched, DimensionalHybrid,
+    
+    // Additional race categories for comprehensive system (avoiding duplicates)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -131,13 +133,19 @@ pub enum AgingRate {
 pub enum CulturalTrait {
     Scholarly, Artistic, Warrior, Peaceful, Nomadic, Traditionalist, 
     Progressive, Mystical, Communal, Independent, Ritualistic, Pragmatic,
-    Harmonious, Competitive, Protective, Exploratory, Meditative,
+    Harmonious, Competitive, Protective, Exploratory, Meditative, Artisan,
+    Playful, Survivor, Enduring, Wise, Stable, Helpful, Free, Adaptive,
+    Detached, Ancient, Explorer, Joyful,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SpiritualAlignment {
     Light, Balance, Harmony, Wisdom, Courage, Compassion, Justice, 
     Beauty, Truth, Growth, Protection, Renewal, Unity, Transcendence,
+    Grace, Joy, Flow, Perfection, Endurance, Serenity, Winter, Freedom,
+    Mirage, Illusion, Storm, Wind, Sky, Stability, Grounding, Void,
+    Cosmos, Universe, Creation, Discovery, Connection, Clarity,
+    Perseverance, Cycle, Survival,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -164,7 +172,7 @@ pub enum NaturalAbility {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ElementalAffinity {
     Fire, Water, Earth, Air, Ice, Lightning, Light, Shadow,
-    Nature, Crystal, Metal, Sound, Gravity, Time, Space,
+    Nature, Crystal, Metal, Sound, Gravity, Time, Space, Moon,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -172,28 +180,28 @@ pub enum MagicalInclination {
     Divination, Enchantment, Evocation, Illusion, Transmutation,
     Conjuration, Necromancy(bool), // bool: benevolent necromancy only
     Healing, Warding, Blessing, Nature, Elemental(ElementalAffinity),
-    Dimensional, Temporal, Psionic, Divine, Primal,
+    Dimensional, Temporal, Psionic, Divine, Primal, Light, Telepathic,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SocialStructure {
     Tribal, Clan, Kingdom, Democracy, Council, Theocracy,
     Meritocracy, Collective, Hierarchy, Egalitarian,
-    Nomadic, CityStates, Federation, Empire,
+    Nomadic, CityStates, Federation, Empire, Independent, Ancient,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Environment {
     Forest, Plains, Mountains, Desert, Ocean, River, Lake,
     Underground, Floating, Volcanic, Crystal, Ice, Jungle,
-    Swamp, Canyon, Cliff, Beach, Urban, Rural, Wilderness,
+    Swamp, Canyon, Cliff, Beach, Urban, Rural, Wilderness, Hills,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ArchitecturalStyle {
     Organic, Crystal, Stone, Wood, Metal, Floating,
     Underground, Cliff, Tree, Coral, Ice, Magical,
-    Geometric, Flowing, Towering, Harmonious,
+    Geometric, Flowing, Towering, Harmonious, Dimensional, Cosmic,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -675,19 +683,329 @@ impl RaceDatabase {
             )
         }).collect()
     }
+
+    // New planet-specific race creation methods needed for the implementations above
+    fn create_sylvan_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Sylvan Variant {}", i + 1), "Tree-bonded nature folk", RaceCategory::Sylvan, planet, None,
+                (1.8, 2.4), BodyBuild::Graceful, vec!["Bark-textured", "Leaf-patterned"], vec!["Moss green", "Autumn colors"], 
+                vec!["Green".to_string(), "Brown".to_string()], 50, 500, 800, AgingRate::Slow,
+                vec![CulturalTrait::Harmonious, CulturalTrait::Protective], SpiritualAlignment::Growth, "Nature Unity".to_string(), vec!["Plant Communication".to_string()],
+                vec![NaturalAbility::LifeDetection, NaturalAbility::NaturalHealing], vec![ElementalAffinity::Nature], vec![MagicalInclination::Nature, MagicalInclination::Healing],
+                SocialStructure::Collective, vec![Environment::Forest], ArchitecturalStyle::Organic, vec!["Sylvan".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_nature_elven_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Nature Elf Variant {}", i + 1), "Forest-guardian elves", RaceCategory::Elven, planet, Some("Elf".to_string()),
+                (1.7, 1.9), BodyBuild::Graceful, vec!["Green-tinged", "Earth-toned"], vec!["Forest green", "Auburn"], 
+                vec!["Green".to_string(), "Gold".to_string()], 100, 750, 1200, AgingRate::Slow,
+                vec![CulturalTrait::Mystical, CulturalTrait::Protective], SpiritualAlignment::Harmony, "Forest Guardian".to_string(), vec!["Animal Speech".to_string()],
+                vec![NaturalAbility::EnhancedSenses("All".to_string()), NaturalAbility::Camouflage], vec![ElementalAffinity::Nature], vec![MagicalInclination::Nature, MagicalInclination::Illusion],
+                SocialStructure::Council, vec![Environment::Forest], ArchitecturalStyle::Tree, vec!["Elvish".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_plant_hybrid_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Plant Hybrid {}", i + 1), "Human-plant blessed unions", RaceCategory::HumanHybrid, planet, None,
+                (1.6, 1.8), BodyBuild::Athletic, vec!["Chlorophyll-tinted"], vec!["Flower colors", "Leaf patterns"], 
+                vec!["Green".to_string(), "Gold".to_string()], 25, 200, 300, AgingRate::Slow,
+                vec![CulturalTrait::Harmonious], SpiritualAlignment::Growth, "Photosynthetic Blessing".to_string(), vec!["Sunlight Sustenance".to_string()],
+                vec![NaturalAbility::NaturalHealing, NaturalAbility::PoisonResistance], vec![ElementalAffinity::Nature, ElementalAffinity::Light], vec![MagicalInclination::Nature, MagicalInclination::Healing],
+                SocialStructure::Collective, vec![Environment::Forest], ArchitecturalStyle::Organic, vec!["Common".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_animal_kin_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Beast Kin {}", i + 1), "Animal-spirited humanoids", RaceCategory::BeastkinHybrid, planet, None,
+                (1.5, 2.0), BodyBuild::Athletic, vec!["Fur patterns", "Natural coloring"], vec!["Animal colors"], 
+                vec!["Wild colors".to_string()], 20, 100, 150, AgingRate::Normal,
+                vec![CulturalTrait::Harmonious, CulturalTrait::Independent], SpiritualAlignment::Balance, "Wild Spirit".to_string(), vec!["Animal Communication".to_string()],
+                vec![NaturalAbility::EnhancedSenses("Smell".to_string()), NaturalAbility::NaturalClimb], vec![ElementalAffinity::Nature], vec![MagicalInclination::Nature, MagicalInclination::Primal],
+                SocialStructure::Tribal, vec![Environment::Forest, Environment::Wilderness], ArchitecturalStyle::Organic, vec!["Beast Speech".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_fairy_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Fairy Folk {}", i + 1), "Diminutive forest spirits", RaceCategory::Sylvan, planet, None,
+                (0.3, 0.6), BodyBuild::Ethereal, vec!["Iridescent", "Flower-petal"], vec!["Rainbow colors", "Flower hues"], 
+                vec!["Sparkling".to_string()], 10, 300, 500, AgingRate::Slow,
+                vec![CulturalTrait::Playful, CulturalTrait::Mystical], SpiritualAlignment::Joy, "Fairy Magic".to_string(), vec!["Natural Flight".to_string(), "Size Change".to_string()],
+                vec![NaturalAbility::NaturalFlight, NaturalAbility::MagicDetection], vec![ElementalAffinity::Nature, ElementalAffinity::Air], vec![MagicalInclination::Illusion, MagicalInclination::Nature],
+                SocialStructure::Collective, vec![Environment::Forest], ArchitecturalStyle::Organic, vec!["Fairy".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_salamander_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Salamander Kin {}", i + 1), "Fire salamander humanoids", RaceCategory::FireTouched, planet, None,
+                (1.5, 1.8), BodyBuild::Athletic, vec!["Fire-scaled", "Ember-touched"], vec!["Flame colors"], 
+                vec!["Fire orange".to_string(), "Lava red".to_string()], 30, 150, 250, AgingRate::Normal,
+                vec![CulturalTrait::Warrior, CulturalTrait::Independent], SpiritualAlignment::Courage, "Fire Immunity".to_string(), vec!["Heat Resistance".to_string()],
+                vec![NaturalAbility::TemperatureResistance, NaturalAbility::NaturalArmor], vec![ElementalAffinity::Fire], vec![MagicalInclination::Evocation, MagicalInclination::Elemental(ElementalAffinity::Fire)],
+                SocialStructure::Tribal, vec![Environment::Volcanic], ArchitecturalStyle::Stone, vec!["Draconic".to_string()]
+            )
+        }).collect()
+    }
+
+    fn create_forge_dwarf_variants(&self, planet: &str, count: usize) -> Vec<RaceDefinition> {
+        (0..count).map(|i| {
+            self.create_base_race(
+                &format!("Forge Dwarf {}", i + 1), "Volcano-dwelling master smiths", RaceCategory::Dwarven, planet, Some("Dwarf".to_string()),
+                (1.3, 1.5), BodyBuild::Robust, vec!["Heat-resistant", "Ember-touched"], vec!["Molten colors"], 
+                vec!["Flame orange".to_string(), "Coal black".to_string()], 120, 400, 600, AgingRate::Slow,
+                vec![CulturalTrait::Artisan, CulturalTrait::Traditionalist], SpiritualAlignment::Justice, "Master Smithing".to_string(), vec!["Fire Resistance".to_string()],
+                vec![NaturalAbility::TemperatureResistance, NaturalAbility::NaturalArmor], vec![ElementalAffinity::Fire, ElementalAffinity::Metal], vec![MagicalInclination::Transmutation, MagicalInclination::Enchantment],
+                SocialStructure::Clan, vec![Environment::Volcanic, Environment::Mountains], ArchitecturalStyle::Stone, vec!["Dwarvish".to_string()]
+            )
+        }).collect()
+    }
     
     // Placeholder methods for other planets - would implement full race generation for each
-    fn generate_verdania_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_pyros_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_aquatica_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_lumina_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_umbra_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_glacialis_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_tempest_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_seraphim_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_nexus_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_calypso_races(&mut self) -> Result<(), String> { Ok(()) }
-    fn generate_shared_races(&mut self) -> Result<(), String> { Ok(()) }
+    /// Generate races for Verdania (the forest world)
+    fn generate_verdania_races(&mut self) -> Result<(), String> {
+        let planet_name = "Verdania".to_string();
+        let mut races = Vec::new();
+        
+        // Forest-adapted races
+        races.extend(self.create_sylvan_variants(&planet_name, 15)); // Tree-people
+        races.extend(self.create_nature_elven_variants(&planet_name, 12)); // Forest elves
+        races.extend(self.create_plant_hybrid_variants(&planet_name, 10)); // Plant-human hybrids
+        races.extend(self.create_animal_kin_variants(&planet_name, 8)); // Beast-people
+        races.extend(self.create_fairy_variants(&planet_name, 5)); // Small fae folk
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Pyros (volcanic world)
+    fn generate_pyros_races(&mut self) -> Result<(), String> {
+        let planet_name = "Pyros".to_string();
+        let mut races = Vec::new();
+        
+        // Fire-adapted races
+        races.extend(self.create_salamander_variants(&planet_name, 12)); // Fire salamander people
+        races.extend(self.create_forge_dwarf_variants(&planet_name, 10)); // Volcano dwarves
+        races.extend(self.create_phoenix_kin_variants(&planet_name, 8)); // Phoenix-blooded
+        races.extend(self.create_lava_elemental_variants(&planet_name, 6)); // Lava-touched humans
+        races.extend(self.create_ember_fae_variants(&planet_name, 4)); // Fire sprites
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Aquatica (ocean world)
+    fn generate_aquatica_races(&mut self) -> Result<(), String> {
+        let planet_name = "Aquatica".to_string();
+        let mut races = Vec::new();
+        
+        // Aquatic races (expanding the existing system)
+        races.extend(self.create_aquatic_variants(&planet_name, 15)); // Deep sea dwellers
+        races.extend(self.create_coral_people_variants(&planet_name, 10)); // Coral reef people
+        races.extend(self.create_sea_elf_variants(&planet_name, 8)); // Ocean elves
+        races.extend(self.create_tide_human_variants(&planet_name, 7)); // Sea-adapted humans
+        races.extend(self.create_whale_kin_variants(&planet_name, 5)); // Whale-song people
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Lumina (crystal world)
+    fn generate_lumina_races(&mut self) -> Result<(), String> {
+        let planet_name = "Lumina".to_string();
+        let mut races = Vec::new();
+        
+        // Crystal-attuned races
+        races.extend(self.create_crystal_kin_variants(&planet_name, 12)); // Living crystal people
+        races.extend(self.create_gem_dwarf_variants(&planet_name, 8)); // Crystal-mining dwarfs
+        races.extend(self.create_prism_elf_variants(&planet_name, 7)); // Light-refracting elves
+        races.extend(self.create_resonance_human_variants(&planet_name, 5)); // Sound-crystal humans
+        races.extend(self.create_light_fae_variants(&planet_name, 3)); // Radiant sprites
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Umbra (underground world)
+    fn generate_umbra_races(&mut self) -> Result<(), String> {
+        let planet_name = "Umbra".to_string();
+        let mut races = Vec::new();
+        
+        // Underground-adapted races
+        races.extend(self.create_deep_dwarf_variants(&planet_name, 12)); // Cave dwarfs
+        races.extend(self.create_shadow_elf_variants(&planet_name, 10)); // Dark elves (divine)
+        races.extend(self.create_cave_human_variants(&planet_name, 8)); // Underground humans
+        races.extend(self.create_mushroom_kin_variants(&planet_name, 6)); // Fungal people
+        races.extend(self.create_crystal_moth_variants(&planet_name, 4)); // Luminous cave dwellers
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Glacialis (ice world)
+    fn generate_glacialis_races(&mut self) -> Result<(), String> {
+        let planet_name = "Glacialis".to_string();
+        let mut races = Vec::new();
+        
+        // Ice-adapted races
+        races.extend(self.create_frost_giant_variants(&planet_name, 8)); // Ice giants
+        races.extend(self.create_ice_elf_variants(&planet_name, 7)); // Frost elves
+        races.extend(self.create_snow_dwarf_variants(&planet_name, 6)); // Arctic dwarfs
+        races.extend(self.create_ice_human_variants(&planet_name, 5)); // Cold-adapted humans
+        races.extend(self.create_winter_fae_variants(&planet_name, 4)); // Frost sprites
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Tempest (desert world)
+    fn generate_tempest_races(&mut self) -> Result<(), String> {
+        let planet_name = "Tempest".to_string();
+        let mut races = Vec::new();
+        
+        // Desert-adapted races
+        races.extend(self.create_sand_nomad_variants(&planet_name, 8)); // Desert nomads
+        races.extend(self.create_dune_elf_variants(&planet_name, 7)); // Sand elves
+        races.extend(self.create_cactus_kin_variants(&planet_name, 6)); // Plant-desert hybrids
+        races.extend(self.create_mirage_human_variants(&planet_name, 5)); // Heat-adapted humans
+        races.extend(self.create_sand_djinn_variants(&planet_name, 4)); // Desert spirits
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Seraphim (floating world)
+    fn generate_seraphim_races(&mut self) -> Result<(), String> {
+        let planet_name = "Seraphim".to_string();
+        let mut races = Vec::new();
+        
+        // Sky-adapted races
+        races.extend(self.create_sky_human_variants(&planet_name, 8)); // Cloud-dwelling humans
+        races.extend(self.create_wind_elf_variants(&planet_name, 7)); // Air elves
+        races.extend(self.create_cloud_giant_variants(&planet_name, 5)); // Sky giants
+        races.extend(self.create_storm_kin_variants(&planet_name, 3)); // Lightning people
+        races.extend(self.create_air_sprite_variants(&planet_name, 2)); // Wind spirits
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Nexus (terrestrial world)
+    fn generate_nexus_races(&mut self) -> Result<(), String> {
+        let planet_name = "Nexus".to_string();
+        let mut races = Vec::new();
+        
+        // Terrestrial balanced races
+        races.extend(self.create_plains_human_variants(&planet_name, 10)); // Grassland humans
+        races.extend(self.create_hill_dwarf_variants(&planet_name, 8)); // Rolling hill dwarfs
+        races.extend(self.create_meadow_elf_variants(&planet_name, 7)); // Peaceful elves
+        races.extend(self.create_earth_giant_variants(&planet_name, 5)); // Stone giants
+        races.extend(self.create_terra_kin_variants(&planet_name, 5)); // Earth-bonded folk
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate races for Calypso (mysterious floating world)
+    fn generate_calypso_races(&mut self) -> Result<(), String> {
+        let planet_name = "Calypso".to_string();
+        let mut races = Vec::new();
+        
+        // Mysterious floating island races
+        races.extend(self.create_void_touched_variants(&planet_name, 12)); // Space-touched beings
+        races.extend(self.create_star_elf_variants(&planet_name, 10)); // Cosmic elves
+        races.extend(self.create_gravity_human_variants(&planet_name, 8)); // Weightless humans
+        races.extend(self.create_cosmic_giant_variants(&planet_name, 6)); // Space giants
+        races.extend(self.create_nebula_sprite_variants(&planet_name, 4)); // Cosmic spirits
+        
+        // Store races and planet distribution
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        self.planet_distributions.insert(planet_name, races.into_iter().map(|r| r.name).collect());
+        Ok(())
+    }
+    /// Generate shared races (found on multiple planets)
+    fn generate_shared_races(&mut self) -> Result<(), String> {
+        // These races exist across multiple planets and facilitate inter-world contact
+        let mut races = Vec::new();
+        
+        // Dimensional travelers and traders
+        races.extend(self.create_planar_human_variants(15)); // Dimension-hopping humans
+        races.extend(self.create_cosmic_elf_variants(12)); // Universe-traveling elves
+        races.extend(self.create_void_walker_variants(10)); // Inter-dimensional beings
+        races.extend(self.create_star_dwarf_variants(8)); // Space-faring dwarfs
+        races.extend(self.create_portal_mage_variants(5)); // Teleportation specialists
+        
+        // Store races across multiple planets
+        for race in races.clone() {
+            self.races.insert(race.name.clone(), race);
+        }
+        
+        // Distribute shared races to multiple planets
+        let shared_race_names: Vec<String> = races.into_iter().map(|r| r.name).collect();
+        let planets = vec!["Espan", "Verdania", "Pyros", "Aquatica", "Lumina", "Umbra", "Glacialis", "Tempest", "Seraphim", "Nexus", "Calypso"];
+        
+        for planet in planets {
+            if let Some(planet_races) = self.planet_distributions.get_mut(planet) {
+                planet_races.extend(shared_race_names.clone());
+            }
+        }
+        
+        Ok(())
+    }
     
     /// Get races by planet
     pub fn get_races_for_planet(&self, planet_name: &str) -> Vec<&RaceDefinition> {
@@ -712,6 +1030,10 @@ impl RaceDatabase {
             .collect()
     }
 }
+
+// Include additional race creation helpers
+pub mod race_creation_helpers;
+pub mod remaining_races;
 
 #[cfg(test)]
 mod tests {

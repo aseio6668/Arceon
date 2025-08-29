@@ -20,6 +20,8 @@ mod database;
 mod group_system;
 mod guild_system;
 mod skill_migration;
+mod work_classification;
+mod work_based_deployment;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

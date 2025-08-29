@@ -218,6 +218,8 @@ pub struct ContributionManager {
     config: ContributionConfig,
     master_node_system: Option<SimpleMasterNodeSystem>,
     reward_engine: SimpleRewardEngine,
+    work_classification_system: crate::work_classification::WorkClassificationSystem,
+    decentralized_rewards: DecentralizedRewardSystem,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -237,6 +239,41 @@ pub struct MasterNodeRequirements {
     pub min_bandwidth_mbps: u32,
     pub min_trust_score: f64,
     pub required_stake_arcm: f64,
+}
+
+/// Decentralized Reward System for work-based currency distribution
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DecentralizedRewardSystem {
+    pub total_network_contribution: f64,
+    pub global_reward_pool: f64,
+    pub reward_distribution_method: RewardDistributionMethod,
+    pub work_verification_consensus: WorkVerificationConsensus,
+    pub network_value_metrics: NetworkValueMetrics,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum RewardDistributionMethod {
+    ProportionalToWork,
+    ProportionalToNetworkBenefit, 
+    HybridWorkAndStake,
+    DynamicMarketDriven,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkVerificationConsensus {
+    pub min_verifiers: u32,
+    pub consensus_threshold: f64,
+    pub verification_reward: f64,
+    pub fraud_penalty: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NetworkValueMetrics {
+    pub total_computation_performed: f64,
+    pub total_data_stored: u64,
+    pub network_availability_score: f64,
+    pub transaction_throughput: f64,
+    pub security_incidents_prevented: u32,
 }
 
 impl ContributionManager {
@@ -289,6 +326,25 @@ impl ContributionManager {
             master_node_system,
             reward_engine: SimpleRewardEngine {
                 base_reward_rate: 0.1,
+            },
+            work_classification_system: crate::work_classification::WorkClassificationSystem::new(),
+            decentralized_rewards: DecentralizedRewardSystem {
+                total_network_contribution: 0.0,
+                global_reward_pool: 1000000.0, // Initial pool
+                reward_distribution_method: RewardDistributionMethod::HybridWorkAndStake,
+                work_verification_consensus: WorkVerificationConsensus {
+                    min_verifiers: 3,
+                    consensus_threshold: 0.67,
+                    verification_reward: 0.1,
+                    fraud_penalty: 10.0,
+                },
+                network_value_metrics: NetworkValueMetrics {
+                    total_computation_performed: 0.0,
+                    total_data_stored: 0,
+                    network_availability_score: 1.0,
+                    transaction_throughput: 100.0,
+                    security_incidents_prevented: 0,
+                },
             },
         }
     }
@@ -362,17 +418,88 @@ impl ContributionManager {
     }
 
     async fn check_for_tasks(&mut self) -> Result<()> {
-        // TODO: Request available tasks from network based on capabilities
-        
-        // Simulate receiving a task
+        // Use work classification system to get meaningful work assignments
         if self.active_tasks.len() < self.config.max_concurrent_tasks as usize {
-            if let Some(task) = self.generate_sample_task() {
-                info!("📋 Received new task: {:?}", task.task_type);
-                self.assign_task(task).await?;
+            // Convert NodeCapabilities to work system format
+            let work_capabilities = crate::master_node::NodeCapabilities {
+                cpu_cores: self.node.capabilities.cpu_cores,
+                memory_gb: self.node.capabilities.memory_gb,
+                storage_gb: self.node.capabilities.storage_gb,
+                bandwidth_mbps: self.node.capabilities.bandwidth_mbps,
+                services: vec![crate::master_node::NodeService::WorldSimulation], // Default services
+            };
+            
+            // Request work assignment from classification system
+            if let Some(work_assignment) = self.work_classification_system.assign_work(
+                self.node.node_id, 
+                &work_capabilities
+            )? {
+                info!("🎯 Received work assignment: {:?}", work_assignment.work_category);
+                
+                // Convert work assignment to network task format
+                let network_task = self.convert_work_to_task(work_assignment).await?;
+                self.assign_task(network_task).await?;
             }
         }
         
         Ok(())
+    }
+
+    /// Convert work assignment to network task format
+    async fn convert_work_to_task(&self, work_assignment: crate::work_classification::WorkAssignment) -> Result<NetworkTask> {
+        use crate::work_classification::WorkCategory;
+        
+        let task_type = match work_assignment.work_category {
+            WorkCategory::WorldStateComputation => TaskType::WorldSimulation { 
+                area_id: "dynamic_area".to_string(), 
+                time_step: rand::random::<u64>() % 100 
+            },
+            WorkCategory::NPCBehaviorProcessing => TaskType::NpcAiProcessing { 
+                npc_count: 10, 
+                complexity: 5 
+            },
+            WorkCategory::ConsensusValidation => TaskType::ConsensusParticipation { 
+                block_height: rand::random::<u64>() % 10000 
+            },
+            WorkCategory::DataStorageAndRetrieval => TaskType::DataStorage { 
+                data_size: 1000, 
+                redundancy: 3 
+            },
+            WorkCategory::PeerNetworkRelay => TaskType::NetworkRelay { 
+                connection_count: 5, 
+                bandwidth: 50 
+            },
+            _ => TaskType::WorldSimulation { 
+                area_id: "default".to_string(), 
+                time_step: 1 
+            },
+        };
+        
+        let task_data = match work_assignment.work_category {
+            WorkCategory::WorldStateComputation => TaskData::WorldState(work_assignment.work_parameters.input_data),
+            WorkCategory::NPCBehaviorProcessing => TaskData::NpcDecisions(work_assignment.work_parameters.input_data),
+            WorkCategory::DataStorageAndRetrieval => TaskData::StorageChunk(work_assignment.work_parameters.input_data),
+            WorkCategory::PeerNetworkRelay => TaskData::NetworkMessage(work_assignment.work_parameters.input_data),
+            _ => TaskData::Computation(work_assignment.work_parameters.input_data),
+        };
+        
+        Ok(NetworkTask {
+            task_id: work_assignment.assignment_id,
+            task_type,
+            priority: TaskPriority::Normal, // Could be derived from work priority
+            resource_requirements: ResourceRequirements {
+                cpu_weight: 0.7, // Higher weight for work-based tasks
+                memory_mb: 1024,
+                storage_mb: 100,
+                network_mbps: 10,
+                estimated_duration: std::time::Duration::from_secs(300),
+            },
+            reward_amount: work_assignment.reward_pool,
+            deadline: work_assignment.expected_completion,
+            assigned_node: Some(self.node.node_id),
+            status: TaskStatus::Assigned(self.node.node_id),
+            data: task_data,
+        })
     }
 
     async fn assign_task(&mut self, mut task: NetworkTask) -> Result<()> {
@@ -453,27 +580,46 @@ impl ContributionManager {
     async fn complete_task(&mut self, task: NetworkTask) -> Result<()> {
         info!("✅ Task completed: {}", task.task_id);
         
-        // Use autonomous reward engine for intelligent reward calculation
-        let reward_result = self.calculate_autonomous_reward(&task).await?;
+        // Create work result for verification
+        let work_result = crate::work_classification::WorkResult {
+            assignment_id: task.task_id,
+            result_data: match &task.data {
+                TaskData::Computation(data) => data.clone(),
+                TaskData::WorldState(data) => data.clone(),
+                TaskData::StorageChunk(data) => data.clone(),
+                TaskData::NpcDecisions(data) => data.clone(),
+                TaskData::NetworkMessage(data) => data.clone(),
+            },
+            computation_proof: vec![0; 32], // Mock proof
+            performance_metrics: crate::work_classification::WorkPerformanceMetrics {
+                cpu_usage: 0.5,
+                memory_usage: 512,
+                execution_time: std::time::Duration::from_secs(60),
+                network_usage: 1024,
+                energy_efficiency: 0.8,
+            },
+            worker_signature: format!("signature_{}", self.node.node_id),
+        };
+        
+        // Verify and reward work through classification system
+        let work_reward = self.work_classification_system.verify_and_reward_work(task.task_id, work_result)?;
         
         // Apply the calculated reward
-        self.node.rewards.arcm_pending += reward_result.total_reward;
+        self.node.rewards.arcm_pending += work_reward;
+        
+        // Update decentralized reward metrics
+        self.decentralized_rewards.total_network_contribution += work_reward;
+        self.decentralized_rewards.network_value_metrics.total_computation_performed += 1.0;
         
         // Update performance metrics
         self.node.performance.tasks_completed += 1;
         
-        info!("💰 Earned {} ArcM", reward_result.total_reward);
-              
-        // Log detailed reward breakdown
-        self.log_reward_breakdown(&reward_result).await?;
+        info!("💰 Earned {} ArcM for productive work", work_reward);
         
         // Update reputation
         self.update_reputation_for_success();
         
         self.completed_tasks.push(task.task_id);
-        
-        // Process any pending payouts
-        // Simplified - no automatic payout processing
         
         Ok(())
     }
@@ -518,6 +664,12 @@ impl ContributionManager {
     async fn handle_master_node_duties(&mut self) -> Result<()> {
         if let Some(ref mut master_system) = self.master_node_system {
             info!("👑 Performing master node duties...");
+            
+            // Coordinate network work distribution
+            self.coordinate_work_distribution().await?;
+            
+            // Update global reward pool based on network activity
+            self.update_global_reward_pool().await?;
             
             // Update node performance with master node activities
             self.update_master_node_performance().await?;
@@ -719,6 +871,53 @@ impl ContributionManager {
         // Propose state updates that need network agreement
         // Participate in voting on state changes
         // Finalize approved state changes
+        
+        Ok(())
+    }
+
+    /// Coordinate work distribution across the network based on demand
+    async fn coordinate_work_distribution(&mut self) -> Result<()> {
+        info!("🎯 Coordinating network work distribution...");
+        
+        // Analyze current network work demands
+        let work_stats = self.work_classification_system.get_network_work_statistics();
+        
+        // Log current work statistics
+        info!("📊 Network Work Statistics:");
+        info!("  🔄 Active assignments: {}", work_stats.active_work_assignments);
+        info!("  ✅ Total completed: {}", work_stats.total_work_completed);
+        info!("  💰 Total rewards distributed: {:.2} ArcM", work_stats.total_rewards_distributed);
+        info!("  ⭐ Average quality: {:.2}", work_stats.average_work_quality);
+        
+        // Adjust reward rates based on demand and supply
+        for (category, completed_count) in work_stats.category_statistics {
+            if completed_count < 10 {
+                info!("⬆️ Increasing rewards for {:?} due to low completion rate", category);
+                // Could adjust work category configurations here
+            }
+        }
+        
+        Ok(())
+    }
+
+    /// Update global reward pool based on network value creation
+    async fn update_global_reward_pool(&mut self) -> Result<()> {
+        info!("💰 Updating global reward pool...");
+        
+        let network_metrics = &mut self.decentralized_rewards.network_value_metrics;
+        
+        // Calculate network value increase
+        let network_value_increase = 
+            network_metrics.total_computation_performed * 0.1 + 
+            (network_metrics.total_data_stored as f64 / 1000000.0) * 0.05 + 
+            network_metrics.network_availability_score * 1.0 +
+            (network_metrics.security_incidents_prevented as f64) * 5.0;
+        
+        // Add value to global reward pool (simulating network value creation)
+        self.decentralized_rewards.global_reward_pool += network_value_increase;
+        
+        info!("💰 Global reward pool updated: {:.2} ArcM (+{:.2})", 
+              self.decentralized_rewards.global_reward_pool, network_value_increase);
         
         Ok(())
     }
